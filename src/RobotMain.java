@@ -1,5 +1,6 @@
 import TI.BoeBot;
 import TI.PinMode;
+import TI.Servo;
 
 public class RobotMain {
 
