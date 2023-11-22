@@ -6,9 +6,16 @@ import robot.Updatable;
 
 public class Voelspriet implements Updatable {
     private boolean vorigeToestand;
+    private VoelsprietCallback callback;
+    private int pinLinks, pinRechts;
 
-    public Voelspriet() {
+    public Voelspriet(VoelsprietCallback callback, int pinLinks, int pinRechts) {
+        BoeBot.setMode(pinLinks, PinMode.Output);
+        BoeBot.setMode(pinRechts, PinMode.Output);
+        this.pinLinks = pinLinks;
+        this.pinRechts = pinRechts;
         this.vorigeToestand = true;
+        this.callback = callback;
     }
 
     @Override
