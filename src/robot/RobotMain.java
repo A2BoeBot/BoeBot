@@ -16,7 +16,7 @@ public class RobotMain implements MotorCallback {
         robot.run();
     }
 
-    private void init() {
+    public void init() {
         updatables.add(linksMotor = new Motor(12, this));
         updatables.add(rechtsMotor = new Motor(13, this));
         linksMotor.zetSnelheid(1400, 1000);
