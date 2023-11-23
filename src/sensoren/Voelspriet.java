@@ -11,11 +11,11 @@ public class Voelspriet implements Updatable {
     private Timer timer;
     private int pinLinks, pinRechts;
 
-    public Voelspriet(VoelsprietCallback callback, int pinLinks, int pinRechts) {
-        BoeBot.setMode(pinLinks, PinMode.Output);
-        BoeBot.setMode(pinRechts, PinMode.Output);
+    public Voelspriet(int pinLinks, int pinRechts, VoelsprietCallback callback) {
         this.pinLinks = pinLinks;
         this.pinRechts = pinRechts;
+        BoeBot.setMode(pinLinks, PinMode.Input);
+        BoeBot.setMode(pinRechts, PinMode.Input);
         this.vorigeToestand = true;
         this.callback = callback;
         this.timer = new Timer(100);
@@ -29,7 +29,7 @@ public class Voelspriet implements Updatable {
             callback.noodRem();
             vorigeToestand = false;
         }
-        if (!BoeBot.digitalRead(pinLinks) && !BoeBot.digitalRead(pinRechts) && vorigeToestand == false) {
+        if (!BoeBot.digitalRead(pinLinks) && !BoeBot.digitalRead(pinRechts) && !vorigeToestand) {
             vorigeToestand = true;
             callback.herstartNaNoodRem();
         }

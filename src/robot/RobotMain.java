@@ -5,12 +5,16 @@ import motor.Motor;
 import motor.MotorCallback;
 import sensoren.Voelspriet;
 import sensoren.VoelsprietCallback;
+import sensoren.Ultrasoon;
+import sensoren.UltrasoonCallback;
+
 import java.util.ArrayList;
 
-public class RobotMain implements MotorCallback, VoelsprietCallback {
+public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCallback {
     private Motor linksMotor, rechtsMotor;
     private Motor[] motors;
     private Voelspriet voelspriet;
+    private Ultrasoon ultrasoon;
     private ArrayList<Updatable> updatables = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -22,11 +26,12 @@ public class RobotMain implements MotorCallback, VoelsprietCallback {
     public void init() {
         updatables.add(linksMotor = new Motor(12, this));
         updatables.add(rechtsMotor = new Motor(13, this));
-        updatables.add(voelspriet = new Voelspriet(this, 5 ,6));
+        updatables.add(voelspriet = new Voelspriet(6, 7, this));
+        updatables.add(ultrasoon = new Ultrasoon(14, 15, this));
         motors = new Motor[2];
         motors[0] = linksMotor;
         motors[1] = rechtsMotor;
-        this.stelMotorenIn(1400, 1000);
+//        this.stelMotorenIn(1400, 1000);
     }
 
     private void run() {
@@ -34,13 +39,7 @@ public class RobotMain implements MotorCallback, VoelsprietCallback {
             for (Updatable updatable : updatables) {
                 updatable.update();
             }
-            BoeBot.wait(1);
-        }
-    }
-
-    public void stelMotorenIn(int doelsnelheid, int tijd) {
-        for (Motor motor : motors) {
-            motor.zetSnelheid(doelsnelheid, tijd);
+            BoeBot.wait(10);
         }
     }
 
@@ -55,16 +54,18 @@ public class RobotMain implements MotorCallback, VoelsprietCallback {
     }
 
     @Override
-    public void herstartNaNoodRem() {
-        for (Motor motor : motors) {
-            motor.herstart();
-        }
+    public void noodRem() {
+        System.out.println("noodrem");
     }
 
     @Override
-    public void noodRem(){
-        for (Motor motor : motors) {
-            motor.noodRem();
-        }
+    public void herstartNaNoodRem() {
+        System.out.println("herstart");
+    }
+
+
+    @Override
+    public void afstand(int pulseIn) {
+
     }
 }
