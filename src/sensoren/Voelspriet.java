@@ -25,11 +25,11 @@ public class Voelspriet implements Updatable {
     public void update() {
         if (!this.timer.timeout())
             return;
-        if (BoeBot.digitalRead(pinLinks) || BoeBot.digitalRead(pinRechts)) {
+        if (!BoeBot.digitalRead(pinLinks) || !BoeBot.digitalRead(pinRechts)) {
             callback.noodRem();
             vorigeToestand = false;
         }
-        if (!BoeBot.digitalRead(pinLinks) && !BoeBot.digitalRead(pinRechts) && !vorigeToestand) {
+        if (BoeBot.digitalRead(pinLinks) && BoeBot.digitalRead(pinRechts) && !vorigeToestand) {
             vorigeToestand = true;
             callback.herstartNaNoodRem();
         }
