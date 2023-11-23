@@ -2,15 +2,12 @@ package robot;
 
 import TI.BoeBot;
 import TI.PinMode;
-import TI.Timer;
 import motor.Motor;
 import motor.MotorCallback;
 import sensoren.Voelspriet;
 import sensoren.VoelsprietCallback;
 import sensoren.Ultrasoon;
 import sensoren.UltrasoonCallback;
-import sensoren.Voelspriet;
-import sensoren.VoelsprietCallback;
 
 import java.util.ArrayList;
 
@@ -19,8 +16,7 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
     private Motor[] motors;
     private Voelspriet voelspriet;
     private Ultrasoon ultrasoon;
-    Timer timer = new Timer(1000);
-    Boolean state = false;
+    private LED led = new LED();
     private ArrayList<Updatable> updatables = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -38,23 +34,20 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
         motors = new Motor[2];
         motors[0] = linksMotor;
         motors[1] = rechtsMotor;
+        led = new LED();
         for (Motor motor : motors) {
             motor.zetSnelheid(100, 100);
         }
     }
 
     private void run() {
-        RGB.rgbALL(0, 0, 0);
+        led.rgbALL(0, 0, 0);
         for (; ; ) {
             for (Updatable updatable : updatables) {
                 updatable.update();
             }
             BoeBot.wait(10);
         }
-    }
-
-    public static void freqOut(int pin, float frequency, int time){
-        BoeBot.freqOut(pin, frequency, time);
     }
 
     @Override
@@ -69,26 +62,20 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
 
     @Override
     public void stop() {
-        BoeBot.wait(1);
-        if (timer.timeout()) {
-            this.state = !this.state;
-            if (state) {
-                RGB.rgbALL(255, 0, 0);
-            } else {
-                RGB.rgbALL(0, 0, 0);
-            }
-            timer.mark();
-//            BoeBot.digitalWrite(0, this.state);
-        }
+        led.ledStop();
         for (Motor motor : motors) {
             motor.stop();
         }
+        Alarm.freqOut(1, 180000, 1000);
     }
+
 
 
     @Override
     public void herstartNaNoodRem() {
-        RGB.rgbALL(0, 0, 0);
+        BoeBot.setMode(1, PinMode.Output);
+        BoeBot.freqOut(1, 1, 1);
+        led.rgbALL(0, 0, 0);
 //        BoeBot.digitalWrite(0, false);
         for (Motor motor : motors) {
             motor.herstart();
