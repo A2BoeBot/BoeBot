@@ -5,6 +5,8 @@ import TI.PinMode;
 import TI.Timer;
 import motor.Motor;
 import motor.MotorCallback;
+import sensoren.Voelspriet;
+import sensoren.VoelsprietCallback;
 import sensoren.Ultrasoon;
 import sensoren.UltrasoonCallback;
 import sensoren.Voelspriet;
@@ -95,7 +97,7 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
 
 
     @Override
-    public void afstand(int pulseIn) {
+    public void afstand(double afstand) {
 
     }
 }
