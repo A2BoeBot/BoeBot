@@ -30,7 +30,7 @@ public class Motor implements Updatable {
         this.timer.setInterval(tijd);
     }
 
-    public void noodRem() {
+    public void stop() {
         if (!this.noodRemAan) {
             this.snelheidBijNoodRem = doelsnelheid;
             this.noodRemAan = true;
