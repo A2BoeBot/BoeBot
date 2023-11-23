@@ -22,7 +22,9 @@ public class Motor implements Updatable {
     }
 
     public void zetSnelheid(int doelsnelheid) {
+        this.snelheid = doelsnelheid;
         this.doelsnelheid = doelsnelheid;
+        this.timer.setInterval(0);
     }
 
     public void zetSnelheid(int doelsnelheid, int tijd) {
@@ -48,14 +50,14 @@ public class Motor implements Updatable {
         if (!this.timer.timeout())
             return;
         if (this.snelheid == this.doelsnelheid)
-            callback.updateMotor(this, snelheid);
+            this.callback.updateMotor(this, this.snelheid);
         int snelheidVerschil = this.doelsnelheid - this.snelheid;
         if (snelheidVerschil > 0)
             snelheidVerschil = -1;
         else if (snelheidVerschil < 0)
             snelheidVerschil = 1;
-        this.snelheid += snelheidVerschil;
-        callback.updateMotor(this, snelheid);
+        this.snelheid -= snelheidVerschil;
+        this.callback.updateMotor(this, this.snelheid);
         this.timer.mark();
     }
 }

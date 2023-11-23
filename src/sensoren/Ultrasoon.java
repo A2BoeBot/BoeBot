@@ -38,7 +38,7 @@ public class Ultrasoon implements Updatable {
         if (pulseIn > 0) {
             double afstand = (pulseIn/1000000.0)*343;
             this.afstand = afstand;
-            this.callback.afstand(this.afstand);
+            this.callback.afstand(this.afstand, this);
         }
     }
 }
