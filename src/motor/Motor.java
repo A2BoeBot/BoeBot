@@ -9,6 +9,7 @@ public class Motor implements Updatable {
     public Servo servo;
     private Timer timer;
     private MotorCallback callback;
+    private boolean noodRemAan;
 
     public Motor(int pin, MotorCallback callback) {
         this.snelheid = 0;
@@ -17,6 +18,7 @@ public class Motor implements Updatable {
         this.servo = new Servo(pin);
         this.timer = new Timer(100);
         this.callback = callback;
+        this.noodRemAan = false;
     }
 
     public void zetSnelheid(int doelsnelheid) {
@@ -29,12 +31,16 @@ public class Motor implements Updatable {
     }
 
     public void noodRem() {
-        this.snelheidBijNoodRem = doelsnelheid;
+        if (!this.noodRemAan) {
+            this.snelheidBijNoodRem = doelsnelheid;
+            this.noodRemAan = true;
+        }
         this.doelsnelheid = 0;
         this.snelheid = 0;
     }
 
     public void herstart() {
+        this.noodRemAan = false;
         this.zetSnelheid(this.snelheidBijNoodRem);
     }
     @Override
@@ -42,13 +48,14 @@ public class Motor implements Updatable {
         if (!this.timer.timeout())
             return;
         if (this.snelheid == this.doelsnelheid)
-            return;
+            callback.updateMotor(this, snelheid);
         int snelheidVerschil = this.doelsnelheid - this.snelheid;
         if (snelheidVerschil > 0)
-            snelheidVerschil = 1;
-        else if (snelheidVerschil < 0)
             snelheidVerschil = -1;
+        else if (snelheidVerschil < 0)
+            snelheidVerschil = 1;
         this.snelheid += snelheidVerschil;
         callback.updateMotor(this, snelheid);
+        this.timer.mark();
     }
 }

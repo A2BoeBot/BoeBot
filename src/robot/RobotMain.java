@@ -23,14 +23,17 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
     }
 
     public void init() {
-//        updatables.add(linksMotor = new Motor(12, this));
-//        updatables.add(rechtsMotor = new Motor(13, this));
-//        updatables.add(voelspriet = new Voelspriet(6, 7, this));
         updatables.add(ultrasoon = new Ultrasoon(13, 14, this));
+        updatables.add(linksMotor = new Motor(12, this));
+        updatables.add(rechtsMotor = new Motor(13, this));
+        updatables.add(voelspriet = new Voelspriet(5, 6, this));
+        updatables.add(ultrasoon = new Ultrasoon(14, 15, this));
         motors = new Motor[2];
         motors[0] = linksMotor;
         motors[1] = rechtsMotor;
-//        this.stelMotorenIn(1400, 1000);
+        for (Motor motor : motors) {
+            motor.zetSnelheid(100, 100);
+        }
     }
 
     private void run() {
@@ -38,7 +41,7 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
             for (Updatable updatable : updatables) {
                 updatable.update();
             }
-//            BoeBot.wait(10);
+            BoeBot.wait(10);
         }
     }
 
@@ -54,12 +57,16 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
 
     @Override
     public void noodRem() {
-        System.out.println("noodrem");
+        for (Motor motor : motors) {
+            motor.noodRem();
+        }
     }
 
     @Override
     public void herstartNaNoodRem() {
-        System.out.println("herstart");
+        for (Motor motor : motors) {
+            motor.herstart();
+        }
     }
 
 
