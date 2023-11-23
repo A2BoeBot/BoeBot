@@ -33,5 +33,6 @@ public class Voelspriet implements Updatable {
             vorigeToestand = true;
             callback.herstartNaNoodRem();
         }
+        this.timer.mark();
     }
 }

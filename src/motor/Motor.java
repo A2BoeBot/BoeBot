@@ -50,5 +50,6 @@ public class Motor implements Updatable {
             snelheidVerschil = -1;
         this.snelheid += snelheidVerschil;
         callback.updateMotor(this, snelheid);
+        this.timer.mark();
     }
 }
