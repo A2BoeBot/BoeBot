@@ -2,11 +2,13 @@ package sensoren;
 
 import TI.BoeBot;
 import TI.PinMode;
+import TI.Timer;
 import robot.Updatable;
 
 public class Voelspriet implements Updatable {
     private boolean vorigeToestand;
     private VoelsprietCallback callback;
+    private Timer timer;
     private int pinLinks, pinRechts;
 
     public Voelspriet(VoelsprietCallback callback, int pinLinks, int pinRechts) {
@@ -16,10 +18,13 @@ public class Voelspriet implements Updatable {
         this.pinRechts = pinRechts;
         this.vorigeToestand = true;
         this.callback = callback;
+        this.timer = new Timer(100);
     }
 
     @Override
     public void update() {
+        if (!this.timer.timeout())
+            return;
         if (BoeBot.digitalRead(pinLinks) || BoeBot.digitalRead(pinRechts)) {
             callback.noodRem();
             vorigeToestand = false;
