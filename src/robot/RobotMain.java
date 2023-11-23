@@ -1,6 +1,5 @@
 package robot;
 
-import TI.BoeBot;
 import motor.Motor;
 import motor.MotorCallback;
 import sensoren.Voelspriet;
@@ -24,10 +23,10 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
     }
 
     public void init() {
-        updatables.add(linksMotor = new Motor(12, this));
-        updatables.add(rechtsMotor = new Motor(13, this));
-        updatables.add(voelspriet = new Voelspriet(6, 7, this));
-        updatables.add(ultrasoon = new Ultrasoon(14, 15, this));
+//        updatables.add(linksMotor = new Motor(12, this));
+//        updatables.add(rechtsMotor = new Motor(13, this));
+//        updatables.add(voelspriet = new Voelspriet(6, 7, this));
+        updatables.add(ultrasoon = new Ultrasoon(13, 14, this));
         motors = new Motor[2];
         motors[0] = linksMotor;
         motors[1] = rechtsMotor;
@@ -39,7 +38,7 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
             for (Updatable updatable : updatables) {
                 updatable.update();
             }
-            BoeBot.wait(10);
+//            BoeBot.wait(10);
         }
     }
 
@@ -65,7 +64,7 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
 
 
     @Override
-    public void afstand(int pulseIn) {
+    public void afstand(double afstand) {
 
     }
 }

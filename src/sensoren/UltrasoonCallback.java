@@ -1,5 +1,5 @@
 package sensoren;
 
 public interface UltrasoonCallback {
-    void afstand(int pulseIn);
+    void afstand(double afstand);
 }

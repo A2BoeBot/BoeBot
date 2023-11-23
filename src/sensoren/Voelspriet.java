@@ -24,7 +24,7 @@ public class Voelspriet implements Updatable {
     @Override
     public void update() {
         if (!this.timer.timeout())
-            return;
+//            return;
         if (BoeBot.digitalRead(pinLinks) || BoeBot.digitalRead(pinRechts)) {
             callback.noodRem();
             vorigeToestand = false;

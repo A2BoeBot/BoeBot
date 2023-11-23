@@ -10,6 +10,8 @@ public class Ultrasoon implements Updatable {
     private int triggerPin;
     private int time;
     private UltrasoonCallback callback;
+    private int timeout = 20000;
+    private double afstand;
 
     public Ultrasoon(int echoPin, int triggerPin, UltrasoonCallback callback) {
         this.echoPin = echoPin;
@@ -17,24 +19,26 @@ public class Ultrasoon implements Updatable {
         this.callback = callback;
         BoeBot.setMode(this.triggerPin, PinMode.Output);
         BoeBot.setMode(this.echoPin, PinMode.Input);
+        BoeBot.digitalWrite(triggerPin, false);
     }
 
-    // TODO: 22/11/2023 make this work and use the correct sensor
+    public double getAfstand(){
+        return this.afstand;
+    }
+
 
     @Override
     public void update() {
-        BoeBot.digitalWrite(this.triggerPin, false);
-        BoeBot.uwait(5);
-        BoeBot.digitalWrite(this.triggerPin, true);
-        BoeBot.uwait(5);
-        BoeBot.digitalWrite(this.triggerPin, false);
-        BoeBot.uwait(750);
-        BoeBot.uwait(115);
-        int pulseIn = BoeBot.pulseIn(this.echoPin, true, 18500);
-        if(pulseIn>0) {
-            System.out.println(pulseIn);
-            this.callback.afstand(pulseIn);
-        }
+//        BoeBot.digitalWrite(this.triggerPin, false);
         BoeBot.uwait(200);
+        BoeBot.digitalWrite(this.triggerPin, true); // trigger pulse
+        BoeBot.uwait(10);
+        BoeBot.digitalWrite(this.triggerPin, false);
+        int pulseIn = BoeBot.pulseIn(this.echoPin, true, this.timeout);
+        if (pulseIn > 0) {
+            double afstand = (pulseIn/1000000.0)*343;
+            this.afstand = afstand;
+            this.callback.afstand(this.afstand);
+        }
     }
 }
