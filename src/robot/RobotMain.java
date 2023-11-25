@@ -1,10 +1,7 @@
 package robot;
 
 import TI.BoeBot;
-import TI.PinMode;
 import TI.Timer;
-import TI.BoeBot;
-import robot.LED;
 import motor.Grijper;
 import motor.GrijperCallback;
 import motor.Motor;
@@ -22,13 +19,13 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
     private Motor linksMotor, rechtsMotor;
     private Motor[] motors;
     private Voelspriet voelspriet;
-    private Ultrasoon ultrasoon;
+    private LED led;
+    private Alarm alarm;
+    private Ultrasoon ultrasoonBoven;
     private Ultrasoon ultrasoonOnder;
-    Timer timer = new Timer(1000);
-    Boolean state = false;
-    private LED led = new LED();
     private ArrayList<Updatable> updatables = new ArrayList<>();
     private int basisSnelheid = 50;
+    private int driveModus = 0;
 
     public static void main(String[] args) {
         RobotMain robot = new RobotMain();
@@ -40,34 +37,32 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
         updatables.add(linksMotor = new Motor(12, this));
         updatables.add(rechtsMotor = new Motor(13, this));
         updatables.add(voelspriet = new Voelspriet(5, 6, this));
-        updatables.add(ultrasoon = new Ultrasoon(10, 11, this));
+        updatables.add(ultrasoonBoven = new Ultrasoon(10, 11, this));
         updatables.add(ultrasoonOnder = new Ultrasoon(8, 9, this));
-//        updatables.add(grijper = new Grijper(7, 500, 900, this));
-        motors = new Motor[2];
-        motors[0] = linksMotor;
-        motors[1] = rechtsMotor;
-        BoeBot.setMode(0, PinMode.Input);
-        led = new LED();
+        updatables.add(grijper = new Grijper(7, 500, 900, this));
+        updatables.add(led = new LED(6));
+        led.alles(0, 255, 0);
+        updatables.add(alarm = new Alarm());
+        alarm.setLed(led);
+        alarm.setBuzzer(0, 20, 1000, 1000);
+        alarm.setKnipper(1000, 255, 0, 0);
+        motors = new Motor[]{linksMotor, rechtsMotor};
         for (Motor motor : motors) {
             motor.zetSnelheid(basisSnelheid, 100);
         }
     }
 
     private void run() {
-        led.rgbALL(0, 0, 0);
         for (; ; ) {
             for (Updatable updatable : updatables) {
                 updatable.update();
             }
             BoeBot.wait(10);
-            if (!BoeBot.digitalRead(0)) {
-//                grijper.open();
-            }
         }
     }
 
 
-
+    // TODO: 25/11/2023 led geeft richting aan
     @Override
     public void updateMotor(Motor motor, int snelheid) {
         final int DUTYCYCLE = 1500;
@@ -80,64 +75,56 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
 
     @Override
     public void stop() {
-        led.ledStop();
+        alarm.start();
         for (Motor motor : motors) {
             motor.stop();
         }
-        Alarm.freqOut(1, 180000, 1000);
     }
-
 
 
     @Override
     public void herstartNaNoodRem() {
-        led.rgbALL(0, 0, 0);
-        BoeBot.setMode(1, PinMode.Output);
-        BoeBot.freqOut(1, 1, 1);
-        led.rgbALL(0, 0, 0);
-//        BoeBot.digitalWrite(0, false);
+        alarm.stop();
         for (Motor motor : motors) {
             motor.herstart();
         }
     }
 
-
+    // TODO: 25/11/2023 grijper pakt object op in modus 1
     @Override
     public void afstand(double afstand, Ultrasoon ultrasoon) {
-        if (ultrasoon == this.ultrasoon) {
+        if (ultrasoon == this.ultrasoonBoven && driveModus == 0) {
 //            System.out.println(afstand + "boven");
             if (afstand >= 1) {
+                alarm.stop();
                 System.out.println("clear");
                 for (Motor motor : motors) {
                     motor.zetSnelheid(basisSnelheid, 10);
                 }
-                led.rgbALL(0, 0, 0);
             } else if (afstand <= 0.25) {
                 for (Motor motor : motors) {
                     motor.zetSnelheid(0);
                     stop();
                 }
             } else {
+                alarm.stop();
+                System.out.println("clear2");
                 for (Motor motor : motors) {
                     motor.zetSnelheid((int) (afstand * basisSnelheid), 10);
-                    led.rgbALL(0, 0, 0);
-
                 }
             }
-        } else if (ultrasoon == this.ultrasoonOnder) {
-//            if (afstand <= 0.055 && BoeBot.digitalRead(0)) {
-//                grijper.dicht();
-//                System.out.println("dicht");
-//            } else if(afstand <0.20){
-//                System.out.println("sne");
-//                System.out.println(afstand + "onder");
-//                for (Motor motor : motors) {
-//                    motor.zetSnelheid((int) (afstand * basisSnelheid)+10);
-//                }
-//            } else {
-//
-//                System.out.println(afstand + "onder");
-//            }
+        } else if (ultrasoon == this.ultrasoonOnder && driveModus == 1) {
+            if (afstand <= 0.055) {
+                grijper.dicht();
+                System.out.println("dicht");
+            } else if (afstand < 0.20) {
+                System.out.println("sne");
+                for (Motor motor : motors) {
+                    motor.zetSnelheid((int) (afstand * basisSnelheid) + 10);
+                }
+            } else {
+                System.out.println(afstand + "onder");
+            }
         }
     }
 }

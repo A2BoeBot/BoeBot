@@ -14,6 +14,7 @@ public class Grijper implements Updatable {
     public Grijper(int pin, int dichtDuty, int openDuty, GrijperCallback callback) {
         this.dichtDuty = dichtDuty;
         this.openDuty = openDuty;
+        this.dutyCycle = openDuty;
         this.grijper = new Servo(pin);
         grijper.start();
         grijper.update(openDuty);
@@ -21,14 +22,14 @@ public class Grijper implements Updatable {
     public void dicht(){
         for (int i = this.dutyCycle; i >= this.dichtDuty; i -= 30) {
             this.dutyCycle = i;
-            update();
+            this.update();
             BoeBot.wait(10);
         }
     }
     public void open(){
         for (int i = this.dutyCycle; i <= this.openDuty; i += 10) {
             this.dutyCycle = i;
-            update();
+            this.update();
             BoeBot.wait(10);
         }
     }

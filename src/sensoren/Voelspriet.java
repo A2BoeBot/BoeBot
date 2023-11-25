@@ -26,7 +26,7 @@ public class Voelspriet implements Updatable {
         if (!this.timer.timeout())
             return;
         if (!BoeBot.digitalRead(this.pinLinks) || !BoeBot.digitalRead(this.pinRechts)) {
-            this.callback.stop();
+//            this.callback.stop();
             this.vorigeToestand = false;
         }
         if (BoeBot.digitalRead(pinLinks) && BoeBot.digitalRead(this.pinRechts) && !this.vorigeToestand) {
