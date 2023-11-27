@@ -18,7 +18,6 @@ public class LED implements Updatable {
             neoPixel.setRood(r);
             neoPixel.setGroen(g);
             neoPixel.setBlauw(b);
-            System.out.println(neoPixel);
         }
     }
 

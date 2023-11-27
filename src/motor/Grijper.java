@@ -19,8 +19,21 @@ public class Grijper implements Updatable {
         grijper.start();
         grijper.update(openDuty);
     }
+
+    public int getOpenDuty() {
+        return openDuty;
+    }
+
+    public int getDichtDuty() {
+        return dichtDuty;
+    }
+
+    public int getDutyCycle() {
+        return dutyCycle;
+    }
+
     public void dicht(){
-        for (int i = this.dutyCycle; i >= this.dichtDuty; i -= 30) {
+        for (int i = this.dutyCycle; i >= this.dichtDuty; i -= 10) {
             this.dutyCycle = i;
             this.update();
             BoeBot.wait(10);

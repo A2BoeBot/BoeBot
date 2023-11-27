@@ -53,7 +53,7 @@ public class Alarm implements Updatable {
     public void stop() {
         BoeBot.digitalWrite(this.buzzerPin, false);
         this.alarm = false;
-        this.led.uit();
+        this.led.alles(0,100,0);
     }
 
     @Override
