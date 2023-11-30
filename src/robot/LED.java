@@ -21,7 +21,7 @@ public class LED implements Updatable {
         }
     }
 
-    public void set(int address, int r, int g, int b){
+    public void set(int address, int r, int g, int b) {
         neoPixels.get(address).setRood(r);
         neoPixels.get(address).setGroen(g);
         neoPixels.get(address).setBlauw(b);
@@ -43,6 +43,46 @@ public class LED implements Updatable {
         }
         BoeBot.rgbShow();
     }
-}
 
+    public void vooruit() {
+        for (int i = 0; i < 6; i++) {
+            if (i > 2) {
+                set(i, 0, 100, 0);
+            } else {
+                set(i,0,0,0);
+            }
+        }
+    }
+
+    public void achteruit() {
+        for (int i = 0; i < 6; i++) {
+            if (i < 3) {
+                set(i, 0, 100, 0);
+            } else {
+                set(i,0,0,0);
+            }
+        }
+    }
+
+    public void links() {
+        System.out.println("test");
+        for (int i = 0; i < 6; i++) {
+            if (i == 2 || i == 3) {
+                set(i, 0, 100, 0);
+            } else {
+                set(i,0,0,0);
+            }
+        }
+    }
+
+    public void rechts() {
+        for (int i = 0; i < 6; i++) {
+            if (i == 0 || i == 5) {
+                set(i, 0, 100, 0);
+            } else {
+                set(i,0,0,0);
+            }
+        }
+    }
+}
 
