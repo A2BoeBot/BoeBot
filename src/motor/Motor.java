@@ -5,20 +5,20 @@ import TI.Timer;
 import robot.Updatable;
 
 public class Motor implements Updatable {
+    private static final int DUTYCYCLE = 1500;
     private int snelheid, doelsnelheid, snelheidBijNoodRem;
-    public Servo servo;
+    private Servo servo;
     private Timer timer;
-    private MotorCallback callback;
-    private boolean noodRemAan;
+    private boolean noodRemAan, inverseRichting;
 
-    public Motor(int pin, MotorCallback callback) {
+    public Motor(int pin, boolean inverseRichting) {
         this.snelheid = 0;
         this.doelsnelheid = 0;
         this.snelheidBijNoodRem = 0;
         this.servo = new Servo(pin);
         this.timer = new Timer(100);
-        this.callback = callback;
         this.noodRemAan = false;
+        this.inverseRichting = inverseRichting;
     }
 
     public void zetSnelheid(int doelsnelheid) {
@@ -45,19 +45,28 @@ public class Motor implements Updatable {
         this.noodRemAan = false;
         this.zetSnelheid(this.snelheidBijNoodRem);
     }
+
     @Override
     public void update() {
         if (!this.timer.timeout())
             return;
-        if (this.snelheid == this.doelsnelheid)
-            this.callback.updateMotor(this, this.snelheid);
+        if (this.snelheid == this.doelsnelheid) {
+            if (this.inverseRichting)
+                this.servo.update(DUTYCYCLE - snelheid);
+            else
+                this.servo.update(DUTYCYCLE + snelheid);
+            return;
+        }
         int snelheidVerschil = this.doelsnelheid - this.snelheid;
         if (snelheidVerschil > 0)
             snelheidVerschil = -1;
         else if (snelheidVerschil < 0)
             snelheidVerschil = 1;
         this.snelheid -= snelheidVerschil;
-        this.callback.updateMotor(this, this.snelheid);
+        if (this.inverseRichting)
+            this.servo.update(DUTYCYCLE - snelheid);
+        else
+            this.servo.update(DUTYCYCLE + snelheid);
         this.timer.mark();
     }
 }

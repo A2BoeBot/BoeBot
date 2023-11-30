@@ -1,20 +1,17 @@
 package robot;
 
 import TI.BoeBot;
-import TI.Timer;
 import motor.Grijper;
 import motor.GrijperCallback;
-import motor.Motor;
-import motor.MotorCallback;
+import motor.Motors;
 import sensoren.*;
 
 import java.util.ArrayList;
 
-public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCallback, GrijperCallback, BluetoothCallback {
+public class RobotMain implements VoelsprietCallback, UltrasoonCallback, GrijperCallback, BluetoothCallback {
 
     private Grijper grijper;
-    private Motor linksMotor, rechtsMotor;
-    private Motor[] motors;
+    private Motors motors;
     private Voelspriet voelspriet;
     private LED led;
     private Alarm alarm;
@@ -32,58 +29,45 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
     }
 
     public void init() {
-        updatables.add(linksMotor = new Motor(12, this));
-        updatables.add(rechtsMotor = new Motor(13, this));
-        updatables.add(voelspriet = new Voelspriet(5, 6, this));
-        updatables.add(ultrasoonBoven = new Ultrasoon(10, 11, this));
-        updatables.add(ultrasoonOnder = new Ultrasoon(8, 9, this));
-        updatables.add(grijper = new Grijper(7, 750, 1200, this));
-        updatables.add(bluetooth = new Bluetooth(9600, this));
-        updatables.add(led = new LED(6));
-        led.alles(0, 100, 0);
-        updatables.add(alarm = new Alarm());
-        alarm.setLed(led);
-        alarm.setBuzzer(0, 20, 1000, 1000);
-        alarm.setKnipper(1000, 255, 0, 0);
-        motors = new Motor[]{linksMotor, rechtsMotor};
+        Updatable[] updatablesToAdd = {
+                this.motors = new Motors(12, 13),
+                this.voelspriet = new Voelspriet(5, 6, this),
+                this.ultrasoonBoven = new Ultrasoon(10, 11, this),
+                this.ultrasoonOnder = new Ultrasoon(8, 9, this),
+                this.grijper = new Grijper(7, 750, 1200, this),
+                this.bluetooth = new Bluetooth(9600, this),
+                this.led = new LED(6),
+                this.alarm = new Alarm()
+        };
+        for (Updatable updatable : updatablesToAdd) {
+            this.updatables.add(updatable);
+        }
+        this.led.alles(0, 100, 0);
+        this.alarm.setLed(led);
+        this.alarm.setBuzzer(0, 20, 1000, 1000);
+        this.alarm.setKnipper(1000, 255, 0, 0);
     }
 
     private void run() {
         for (; ; ) {
-            for (Updatable updatable : updatables) {
+            for (Updatable updatable : this.updatables) {
                 updatable.update();
             }
             BoeBot.wait(10);
         }
     }
 
-
-    // TODO: 25/11/2023 led geeft richting aan
-    @Override
-    public void updateMotor(Motor motor, int snelheid) {
-        final int DUTYCYCLE = 1500;
-        if (motor == linksMotor) {
-            linksMotor.servo.update(DUTYCYCLE - snelheid);
-        } else if (motor == rechtsMotor) {
-            rechtsMotor.servo.update(DUTYCYCLE + snelheid);
-        }
-    }
-
     @Override
     public void stop() {
-        alarm.start();
-        for (Motor motor : motors) {
-            motor.stop();
-        }
+        this.alarm.start();
+        this.motors.stop();
     }
 
 
     @Override
     public void herstartNaNoodRem() {
-        alarm.stop();
-        for (Motor motor : motors) {
-            motor.herstart();
-        }
+        this.alarm.stop();
+        this.motors.herstart();
     }
 
     // TODO: 25/11/2023 grijper pakt object op in modus 1
@@ -92,30 +76,23 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
         if (ultrasoon == this.ultrasoonBoven && driveModus == 0) {
 //            System.out.println(afstand + "boven");
             if (afstand >= 1) {
-                alarm.stop();
-                for (Motor motor : motors) {
-                    motor.zetSnelheid(basisSnelheid, 10);
-                }
+                this.alarm.stop();
+                this.motors.zetSnelheden(basisSnelheid, 10);
             } else if (afstand <= 0.25) {
-                for (Motor motor : motors) {
-                    motor.zetSnelheid(0);
-                    stop();
-                }
+                this.motors.zetSnelheden(0);
+                this.motors.stop();
             } else {
-                alarm.stop();
-                for (Motor motor : motors) {
-                    motor.zetSnelheid((int) (afstand * basisSnelheid), 10);
-                }
+                this.alarm.stop();
+                this.motors.zetSnelheden((int) (afstand * basisSnelheid), 10);
             }
         } else if (ultrasoon == this.ultrasoonOnder && driveModus == 1) {
             if (afstand <= 0.055) {
-                grijper.dicht();
+                this.grijper.dicht();
                 System.out.println("dicht");
             } else if (afstand < 0.20) {
                 System.out.println("sne");
-                for (Motor motor : motors) {
-                    motor.zetSnelheid((int) (afstand * basisSnelheid) + 10);
-                }
+                this.motors.zetSnelheden((int) (afstand * basisSnelheid) + 10);
+                this.motors.zetSnelheden((int) (afstand * basisSnelheid) + 10);
             } else {
                 System.out.println(afstand + "onder");
             }
@@ -125,35 +102,28 @@ public class RobotMain implements MotorCallback, VoelsprietCallback, UltrasoonCa
     @Override
     public void tekstOntvangen(String tekst) {
         System.out.println(tekst);
-        if (driveModus == -1) {
+        if (this.driveModus == -1) {
             if (tekst.equals("1")) {
-                for (Motor motor : motors) {
-                    motor.zetSnelheid(basisSnelheid);
-                }
+                this.motors.zetSnelheden(basisSnelheid);
             } else if (tekst.equals("2")) {
-                for (Motor motor : motors) {
-                    motor.zetSnelheid(-basisSnelheid);
-                }
+                this.motors.zetSnelheden(-basisSnelheid);
             } else if (tekst.equals("3")) {
-                linksMotor.zetSnelheid(basisSnelheid);
-                rechtsMotor.zetSnelheid(-basisSnelheid);
+                this.motors.draaiLinks(basisSnelheid);
             } else if (tekst.equals("4")) {
-                linksMotor.zetSnelheid(-basisSnelheid);
-                rechtsMotor.zetSnelheid(basisSnelheid);
-            } else if (tekst.equals("5")) {;
-                alarm.stop();
-                for (Motor motor : motors) {
-                    motor.stop();
+                this.motors.draaiRechts(basisSnelheid);
+            } else if (tekst.equals("5")) {
+                ;
+                this.alarm.stop();
+                this.motors.stop();
+            } else if (tekst.equals("6")) {
+                System.out.println(this.grijper.getDutyCycle());
+                if (this.grijper.getDutyCycle() == this.grijper.getOpenDuty()) {
+                    this.grijper.dicht();
+                } else if (this.grijper.getDutyCycle() == this.grijper.getDichtDuty()) {
+                    this.grijper.open();
                 }
-            }else if (tekst.equals("6")) {
-                System.out.println(grijper.getDutyCycle());
-               if( grijper.getDutyCycle() == grijper.getOpenDuty()){
-                   grijper.dicht();
-               } else if (grijper.getDutyCycle() == grijper.getDichtDuty()) {
-                   grijper.open();
-               }
             } else if (tekst.equals("7")) {
-                alarm.start();
+                this.alarm.start();
             }
         }
     }
