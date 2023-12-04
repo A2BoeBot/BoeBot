@@ -47,9 +47,7 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm()
         };
-        for (Updatable updatable : updatablesToAdd) {
-            this.updatables.add(updatable);
-        }
+        this.updatables.addAll(Arrays.asList(updatablesToAdd));
         motors.zetSnelheden(basisSnelheid);
         miniPID.setOutputLimits(minStuur, maxStuur);
         this.alarm.setLed(led);
@@ -83,6 +81,8 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
                 this.motors.herstart();
                 this.motors.zetSnelheden((int) (afstand * basisSnelheid), 10);
             }
+        } else if (ultrasoon == this.ultrasoonOnder) {
+//            System.out.println(afstand + "onder");
         }
     }
 
@@ -90,9 +90,9 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
     @Override
     public void getLijn(boolean[] states) {
         boolean[] temp = {false, false, false};
-        boolean kruispunt;
+        boolean kruispunt = false;
 //        if(Arrays.equals(states, temp))
-        System.out.println(Arrays.toString(states));
+//        System.out.println(Arrays.toString(states));
         if (states[2]) {
             if (stuur > minStuur) {
                 stuur -= gevoeligheid;
@@ -110,8 +110,9 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
             }
         } else {
             kruispunt = true;
-//            stuur = 0;
+            stuur = 0;
         }
+        System.out.println(kruispunt);
         double pid = miniPID.getOutput(0, stuur);
 //        if (stuur != 0);
 //            System.out.println(stuur);

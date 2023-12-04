@@ -26,9 +26,7 @@ public class Lijnvolger implements Updatable {
         inputs[0] = BoeBot.analogRead(rechtsPin);
         inputs[1] = BoeBot.analogRead(middenPin);
         inputs[2] = BoeBot.analogRead(linksPin);
-        System.out.println(Arrays.toString(inputs));
         int baseline = max(inputs);
-        System.out.println(baseline-gemiddeld(inputs));
         boolean gelijk = baseline-gemiddeld(inputs) < 150;
         for (int i = 0; i < inputs.length; i++) {
             states[i] = !(inputs[i] < baseline) && !gelijk;
