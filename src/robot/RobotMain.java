@@ -42,7 +42,7 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
                 this.lijvolger = new Lijnvolger(0, 1, 2, this),
                 this.ultrasoonBoven = new Ultrasoon(10, 11, this),
                 this.ultrasoonOnder = new Ultrasoon(8, 9, this),
-                this.ultrasoonAchter = new Ultrasoon(3, 4, this),
+                this.ultrasoonAchter = new Ultrasoon(4, 3, this),
                 this.grijper = new Grijper(7, 750, 1200, this),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm()
@@ -83,6 +83,8 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
             }
         } else if (ultrasoon == this.ultrasoonOnder) {
 //            System.out.println(afstand + "onder");
+        } else if (ultrasoon == this.ultrasoonAchter) {
+//            System.out.println(afstand + "achter");
         }
     }
 
@@ -112,7 +114,7 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
             kruispunt = true;
             stuur = 0;
         }
-        System.out.println(kruispunt);
+//        System.out.println(kruispunt);
         double pid = miniPID.getOutput(0, stuur);
 //        if (stuur != 0);
 //            System.out.println(stuur);
