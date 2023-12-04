@@ -16,6 +16,7 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
     private LED led;
     private Lijnvolger lijvolger;
     private Ultrasoon ultrasoonBoven;
+    private Ultrasoon ultrasoonAchter;
     private Ultrasoon ultrasoonOnder;
     private Alarm alarm;
     private Bluetooth bluetooth;
@@ -41,6 +42,7 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
                 this.lijvolger = new Lijnvolger(0, 1, 2, this),
                 this.ultrasoonBoven = new Ultrasoon(10, 11, this),
                 this.ultrasoonOnder = new Ultrasoon(8, 9, this),
+                this.ultrasoonAchter = new Ultrasoon(3, 4, this),
                 this.grijper = new Grijper(7, 750, 1200, this),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm()
