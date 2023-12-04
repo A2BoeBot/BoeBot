@@ -65,10 +65,9 @@ public class LED implements Updatable {
     }
 
     public void links() {
-        System.out.println("test");
         for (int i = 0; i < 6; i++) {
             if (i == 2 || i == 3) {
-                set(i, 0, 100, 0);
+                set(i, 255, 100, 0);
             } else {
                 set(i,0,0,0);
             }
@@ -78,7 +77,7 @@ public class LED implements Updatable {
     public void rechts() {
         for (int i = 0; i < 6; i++) {
             if (i == 0 || i == 5) {
-                set(i, 0, 100, 0);
+                set(i, 255, 100, 0);
             } else {
                 set(i,0,0,0);
             }

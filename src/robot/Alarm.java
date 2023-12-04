@@ -53,7 +53,6 @@ public class Alarm implements Updatable {
     public void stop() {
         BoeBot.digitalWrite(this.buzzerPin, false);
         this.alarm = false;
-        this.led.alles(0,100,0);
     }
 
     @Override
@@ -68,9 +67,9 @@ public class Alarm implements Updatable {
                     } else {
                         BoeBot.digitalWrite(this.buzzerPin, false);
                     }
-                    this.buzzerState = !this.buzzerState;
-                    buzzerTimer.mark();
                 }
+                this.buzzerState = !this.buzzerState;
+                buzzerTimer.mark();
             }
             if (this.timer.timeout() && this.kinpper) {
                 if (this.ledState) {
