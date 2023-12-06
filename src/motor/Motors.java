@@ -80,7 +80,7 @@ public class Motors implements Updatable {
                 } else if (this.linksMotor.getSnelheid() < 0) {
                     led.achteruit();
                 } else {
-//                    led.uit();
+                    led.uit();
                 }
             }
         }
