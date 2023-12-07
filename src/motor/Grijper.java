@@ -2,7 +2,6 @@ package motor;
 
 import TI.BoeBot;
 import TI.Servo;
-import robot.RobotMain;
 import robot.Updatable;
 
 public class Grijper implements Updatable {
@@ -11,7 +10,7 @@ public class Grijper implements Updatable {
     private int dichtDuty;
     private int dutyCycle = 500;
 
-    public Grijper(int pin, int dichtDuty, int openDuty, GrijperCallback callback) {
+    public Grijper(int pin, int dichtDuty, int openDuty) {
         this.dichtDuty = dichtDuty;
         this.openDuty = openDuty;
         this.dutyCycle = openDuty;

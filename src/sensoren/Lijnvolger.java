@@ -1,12 +1,7 @@
 package sensoren;
 
 import TI.BoeBot;
-import motor.Motors;
-import robot.MiniPID;
 import robot.Updatable;
-import sensoren.Bluetooth;
-
-import java.util.Arrays;
 
 public class Lijnvolger implements Updatable {
     private int rechtsPin, middenPin, linksPin;

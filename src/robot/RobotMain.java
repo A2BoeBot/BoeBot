@@ -2,14 +2,13 @@ package robot;
 
 import TI.BoeBot;
 import motor.Grijper;
-import motor.GrijperCallback;
 import motor.Motors;
 import sensoren.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothCallback, LijnvolgerCallback {
+public class RobotMain implements UltrasoonCallback, BluetoothCallback, LijnvolgerCallback {
 
     private Grijper grijper;
     private Motors motors;
@@ -43,7 +42,7 @@ public class RobotMain implements UltrasoonCallback, GrijperCallback, BluetoothC
                 this.ultrasoonBoven = new Ultrasoon(10, 11, this),
                 this.ultrasoonOnder = new Ultrasoon(8, 9, this),
                 this.ultrasoonAchter = new Ultrasoon(4, 3, this),
-                this.grijper = new Grijper(7, 750, 1200, this),
+                this.grijper = new Grijper(7, 750, 1200),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm()
         };
