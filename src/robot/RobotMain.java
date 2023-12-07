@@ -99,13 +99,13 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
             if (stuur > minStuur) {
                 stuur -= 1;
             }
-            stuur = (stuur)^gevoeligheid;
+            stuur = (int) Math.pow((stuur),gevoeligheid);
         } else if (states[0]) {
             kruispuntGeteld = false;
             if (stuur < maxStuur) {
                 stuur += 1;
             }
-            stuur = (stuur)^gevoeligheid;
+            stuur = (int) Math.pow((stuur),gevoeligheid);
         } else if (states[1]) {
             kruispuntGeteld = false;
             stuur = 0;
