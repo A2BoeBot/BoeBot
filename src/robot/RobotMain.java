@@ -1,6 +1,7 @@
 package robot;
 
 import TI.BoeBot;
+import TI.Timer;
 import motor.Grijper;
 import motor.Motors;
 import sensoren.*;
@@ -19,14 +20,17 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private Ultrasoon ultrasoonOnder;
     private Alarm alarm;
     private Bluetooth bluetooth;
+    private Timer timer = new Timer(100);
     private ArrayList<Updatable> updatables = new ArrayList<>();
     private final int basisSnelheid = 50;
     private int driveModus = 0;
     private double gevoeligheid = 1.5;
-    private double minStuur, maxStuur;
+    private int minStuur, maxStuur;
     private int kruispunt, tijd, stuur, snelheid;
     private int draaikruispunt = 3;
     private boolean kruispuntGeteld;
+    private double stopAfstand = 0.25;
+    private double gevaarAfstand = 0.5;
 
     public static void main(String[] args) {
         RobotMain robot = new RobotMain();
@@ -38,7 +42,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
         Updatable[] updatablesToAdd = {
                 this.led = new LED(6),
                 this.motors = new Motors(12, 13, led),
-                this.lijvolger = new Lijnvolger(0, 1, 2, this),
+//                this.lijvolger = new Lijnvolger(0, 1, 2, this),
                 this.ultrasoonBoven = new Ultrasoon(10, 11, this),
                 this.ultrasoonOnder = new Ultrasoon(8, 9, this),
                 this.ultrasoonAchter = new Ultrasoon(4, 3, this),
@@ -51,6 +55,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
         this.alarm.setLed(led);
         this.alarm.setBuzzer(0, 20, 1000, 1000);
         this.alarm.setKnipper(1000, 255, 0, 0);
+        grijper.open();
+        this.snelheid = this.basisSnelheid;
     }
 
     private void run() {
@@ -65,57 +71,56 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     // TODO: 25/11/2023 grijper pakt object op
     @Override
     public void afstand(double afstand, Ultrasoon ultrasoon) {
-        if (ultrasoon == this.ultrasoonBoven && driveModus == 0) {
-//            System.out.println(afstand + "boven");
-            if (afstand >= 1) {
+        if (driveModus == 0) {
+            if (snelheid > 0 && ultrasoon == this.ultrasoonAchter) {
+                return;
+            }
+            if ((snelheid < 0 || grijper.getDutyCycle() == grijper.getOpenDuty()) && ultrasoon == this.ultrasoonBoven) {
+                return;
+            }
+            if ((snelheid < 0 || grijper.getDutyCycle() == grijper.getDichtDuty()) && ultrasoon == this.ultrasoonOnder) {
+                return;
+            }
+            System.out.println(afstand+"afstand");
+            if (afstand >= gevaarAfstand) {
                 this.alarm.stop();
                 this.motors.herstart();
                 this.motors.zetSnelheden(snelheid, 10);
-            } else if (afstand <= 0.25) {
+                this.maxStuur = (int) (snelheid / 1.5);
+                this.minStuur = (int) (snelheid / 1.5 * -1);
+            } else if (afstand <= stopAfstand) {
                 this.alarm.start();
                 this.motors.stop();
             } else {
                 this.alarm.stop();
                 this.motors.herstart();
-                this.motors.zetSnelheden((int) (afstand * snelheid), 10);
-                this.maxStuur = afstand * snelheid / 1.5;
-                this.minStuur = afstand * snelheid / 1.5 * -1;
+                this.motors.zetSnelheden((int) ((afstand - stopAfstand) / (gevaarAfstand - stopAfstand) * snelheid));
+                this.maxStuur = (int) (afstand * snelheid / 1.5);
+                this.minStuur = (int) (afstand * snelheid / 1.5 * -1);
             }
-        } else if (ultrasoon == this.ultrasoonOnder) {
-//            System.out.println(afstand + "onder");
-        } else if (ultrasoon == this.ultrasoonAchter) {
-//            System.out.println(afstand + "achter");
         }
     }
 
 
     @Override
     public void getLijn(boolean[] states) {
-        System.out.println(Arrays.toString(states));
-        if (driveModus == -1) {
+//        System.out.println(Arrays.toString(states));
+        if (driveModus == -1 || timer.timeout()) {
+            timer.mark();
             return;
         } else if (states[2]) {
             kruispuntGeteld = false;
             if (tijd > minStuur) {
                 tijd -= 1;
             }
-            stuur = (int) Math.round(Math.pow(gevoeligheid, tijd));
         } else if (states[0]) {
             kruispuntGeteld = false;
             if (tijd < maxStuur) {
                 tijd += 1;
             }
-            stuur = (int) Math.round(Math.pow(gevoeligheid, tijd));
         } else if (states[1]) {
             kruispuntGeteld = false;
             tijd = 0;
-            if (kruispunt >= draaikruispunt) {
-//                snelheid = 0;
-//                return;
-//                driveModus = 1;
-//                motors.stop();
-//                alarm.start();
-            }
         } else {
             tijd = 0;
             if (!kruispuntGeteld) {
@@ -124,28 +129,27 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
             }
 
         }
-        System.out.println(kruispunt);
-//        System.out.println(stuur);
-
-
-        motors.draaiRelatief(stuur);
-        if (tijd == 0) {
-            snelheid = basisSnelheid;
-            this.maxStuur = snelheid / 1.5;
-            this.minStuur = snelheid / 1.5 * -1;
-        } else {
-            snelheid = (int) (basisSnelheid - 10);
-            this.maxStuur = basisSnelheid / 1.5;
-            this.minStuur = basisSnelheid / 1.5 * -1;
+        System.out.println(tijd);
+        if (tijd > 0)
+            stuur = (int) Math.round(Math.pow(gevoeligheid, tijd));
+        else
+            stuur = (int) Math.round(Math.pow(gevoeligheid, tijd * -1)) * -1;
+        if (stuur > maxStuur) {
+            stuur = maxStuur;
         }
+        if (stuur < minStuur) {
+            stuur = minStuur;
+        }
+        System.out.println(stuur);
+        motors.draaiRelatief(stuur);
 //
     }
 
     @Override
     public void tekstOntvangen(String tekst) {
         if (this.driveModus == -1) {
-            System.out.print(tekst);
-            if(tekst.matches("-?[0-9]+,-?[0-9]+")){
+            if (tekst.matches("-?[0-9]+,-?[0-9]+")) {
+                System.out.println(tekst);
                 int x = Integer.parseInt(tekst.split(",")[0]);
                 int y = Integer.parseInt(tekst.split(",")[1]);
                 motors.zetSnelheden(y);
