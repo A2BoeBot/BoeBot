@@ -22,9 +22,9 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private ArrayList<Updatable> updatables = new ArrayList<>();
     private final int basisSnelheid = 50;
     private int driveModus = 0;
-    private int gevoeligheid = 4;
+    private double gevoeligheid = 1.5;
     private double minStuur, maxStuur;
-    private int kruispunt, stuur, snelheid;
+    private int kruispunt, tijd, stuur, snelheid;
     private int draaikruispunt = 3;
     private boolean kruispuntGeteld;
 
@@ -96,19 +96,19 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
             return;
         } else if (states[2]) {
             kruispuntGeteld = false;
-            if (stuur > minStuur) {
-                stuur -= 1;
+            if (tijd > minStuur) {
+                tijd -= 1;
             }
-            stuur = (int) Math.pow((stuur),gevoeligheid);
+            stuur = (int) Math.round(Math.pow(gevoeligheid, tijd));
         } else if (states[0]) {
             kruispuntGeteld = false;
-            if (stuur < maxStuur) {
-                stuur += 1;
+            if (tijd < maxStuur) {
+                tijd += 1;
             }
-            stuur = (int) Math.pow((stuur),gevoeligheid);
+            stuur = (int) Math.round(Math.pow(gevoeligheid, tijd));
         } else if (states[1]) {
             kruispuntGeteld = false;
-            stuur = 0;
+            tijd = 0;
             if (kruispunt >= draaikruispunt) {
 //                snelheid = 0;
 //                return;
@@ -117,7 +117,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 //                alarm.start();
             }
         } else {
-            stuur = 0;
+            tijd = 0;
             if (!kruispuntGeteld) {
                 kruispuntGeteld = true;
                 kruispunt++;
@@ -129,7 +129,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
 
         motors.draaiRelatief(stuur);
-        if (stuur == 0) {
+        if (tijd == 0) {
             snelheid = basisSnelheid;
             this.maxStuur = snelheid / 1.5;
             this.minStuur = snelheid / 1.5 * -1;
