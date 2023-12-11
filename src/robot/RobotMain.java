@@ -24,10 +24,9 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private ArrayList<Updatable> updatables = new ArrayList<>();
     private final int basisSnelheid = 50;
     private int driveModus = 0;
-    private double gevoeligheid = 1.5;
+    private double gevoeligheid = 2;
     private int minStuur, maxStuur;
     private int kruispunt, tijd, stuur, snelheid;
-    private int draaikruispunt = 3;
     private boolean kruispuntGeteld;
     private double stopAfstand = 0.25;
     private double gevaarAfstand = 0.5;
@@ -42,7 +41,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
         Updatable[] updatablesToAdd = {
                 this.led = new LED(6),
                 this.motors = new Motors(12, 13, led),
-//                this.lijvolger = new Lijnvolger(0, 1, 2, this),
+                this.lijvolger = new Lijnvolger(0, 1, 2, this),
                 this.ultrasoonBoven = new Ultrasoon(10, 11, this),
                 this.ultrasoonOnder = new Ultrasoon(8, 9, this),
                 this.ultrasoonAchter = new Ultrasoon(4, 3, this),
@@ -55,7 +54,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
         this.alarm.setLed(led);
         this.alarm.setBuzzer(0, 20, 1000, 1000);
         this.alarm.setKnipper(1000, 255, 0, 0);
-        grijper.open();
         this.snelheid = this.basisSnelheid;
     }
 
@@ -81,7 +79,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
             if ((snelheid < 0 || grijper.getDutyCycle() == grijper.getDichtDuty()) && ultrasoon == this.ultrasoonOnder) {
                 return;
             }
-            System.out.println(afstand+"afstand");
+//            System.out.println(afstand+"afstand");
             if (afstand >= gevaarAfstand) {
                 this.alarm.stop();
                 this.motors.herstart();
