@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class LED implements Updatable {
     private ArrayList<NeoPixel> neoPixels = new ArrayList<>();
+    private boolean ledOnOROF;
 
     public LED(int neoPixels) {
         for (int i = 0; i < neoPixels; i++) {
@@ -45,6 +46,7 @@ public class LED implements Updatable {
     }
 
     public void vooruit() {
+        if (ledOnOROF)
         for (int i = 0; i < 6; i++) {
             if (i > 2) {
                 set(i, 0, 100, 0);
@@ -55,6 +57,7 @@ public class LED implements Updatable {
     }
 
     public void achteruit() {
+        if (ledOnOROF)
         for (int i = 0; i < 6; i++) {
             if (i < 3) {
                 set(i, 0, 100, 0);
@@ -65,6 +68,7 @@ public class LED implements Updatable {
     }
 
     public void links() {
+        if (ledOnOROF)
         for (int i = 0; i < 6; i++) {
             if (i == 2 || i == 3) {
                 set(i, 255, 100, 0);
@@ -75,12 +79,25 @@ public class LED implements Updatable {
     }
 
     public void rechts() {
+        if (ledOnOROF)
         for (int i = 0; i < 6; i++) {
             if (i == 0 || i == 5) {
                 set(i, 255, 100, 0);
             } else {
                 set(i,0,0,0);
             }
+        }
+    }
+
+    public void deur(boolean aanOfUit) {
+        ledOnOROF = false; //dit is tijdelijk
+        if (!aanOfUit) {
+            for (int i = 0; i < 6; i++) {
+                set(i, i * 10, i, i + 10);
+            }
+            BoeBot.rgbShow();
+        } else {
+            uit();
         }
     }
 }

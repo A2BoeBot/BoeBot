@@ -22,7 +22,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private Bluetooth bluetooth;
     private Timer timer = new Timer(100);
     private ArrayList<Updatable> updatables = new ArrayList<>();
-    private final int basisSnelheid = 50;
+    private int basisSnelheid = 20;
+    private Afstandsbediening afstandsbediening;
     private int driveModus = 0;
     private double gevoeligheid = 2;
     private int minStuur, maxStuur;
@@ -47,7 +48,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 this.ultrasoonAchter = new Ultrasoon(4, 3, this),
                 this.grijper = new Grijper(7, 750, 1200),
                 this.bluetooth = new Bluetooth(9600, this),
-                this.alarm = new Alarm()
+                this.alarm = new Alarm(),
+                this.afstandsbediening = new Afstandsbediening(6)
         };
         this.updatables.addAll(Arrays.asList(updatablesToAdd));
         motors.zetSnelheden(basisSnelheid);
