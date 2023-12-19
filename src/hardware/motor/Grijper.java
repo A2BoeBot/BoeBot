@@ -1,8 +1,8 @@
-package motor;
+package hardware.motor;
 
 import TI.BoeBot;
 import TI.Servo;
-import robot.Updatable;
+import applicatie.Updatable;
 
 public class Grijper implements Updatable {
     private Servo grijper;

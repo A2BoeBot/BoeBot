@@ -1,9 +1,9 @@
-package sensoren;
+package hardware.sensoren;
 
 import TI.BoeBot;
 import TI.PinMode;
 import TI.Timer;
-import robot.Updatable;
+import applicatie.Updatable;
 
 public class Voelspriet implements Updatable {
     private boolean vorigeToestand;

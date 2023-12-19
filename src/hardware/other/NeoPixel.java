@@ -1,4 +1,4 @@
-package robot;
+package hardware.other;
 
 public class NeoPixel {
     private int address;

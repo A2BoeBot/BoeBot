@@ -1,13 +1,14 @@
-package robot;
+package hardware.other;
 
 import TI.BoeBot;
 import TI.PinMode;
+import applicatie.Updatable;
 
 public class Afstandsbediening implements Updatable {
+    private static final int KNOP1 = 0b0000000;
     private int pulseLen;
     private int pin;
-    private int lijstVanBitjes[] = new int[12];
-    private String bitBouwer = "";
+    private int pulses[] = new int[12];
 
     public Afstandsbediening(int pin) {
         this.pin = pin;
@@ -19,34 +20,21 @@ public class Afstandsbediening implements Updatable {
         this.pulseLen = BoeBot.pulseIn(pin, false, 6000);
         if (this.pulseLen > 2000) {
             for (int i = 0; i < 12; i++) {
-                lijstVanBitjes[i] = BoeBot.pulseIn(this.pin, false, 20000);
-                if (lijstVanBitjes[i] > 1000) {
-                    bitBouwer += "1";
-                    lijstVanBitjes[i] = 1;
-                } else if (lijstVanBitjes[i] <= 1000) {
-                    bitBouwer += "0";
-                    lijstVanBitjes[i] = 0;
+                pulses[i] = BoeBot.pulseIn(this.pin, false, 20000);
+            }
+            int code = 0;
+            for (int i = 0; i < 12; i++) {
+                if (pulses[i] > 1000) {
+                    code |= 1 << i;
                 }
             }
-            if (bitBouwer.equals("000000000000")) {           //knop 1
-                System.out.println("knop1");
-            } else if (bitBouwer.equals("100000000000")) {   //knop 2
+            int buttonCode = code & 0b1111111;
+            int deviceCode = (code >> 7) & 0b11111;
+            System.out.println(buttonCode);
+            System.out.println(Integer.toBinaryString(buttonCode));
+            if (buttonCode == KNOP1){
 
-            } else if (bitBouwer.equals("010000000000")) {  //knop 3
-
-            } else if (bitBouwer.equals("110000000000")) {  //knop 4
-
-            } else if (bitBouwer.equals("001000000000")) {  //knop 5
-
-            } else if (bitBouwer.equals("100100000000")) {  //knop 6
-
-            } else if (bitBouwer.equals("100000000000")) {  //knop 7
-//            System.out.println(temp);
-                System.out.println(lijstVanBitjes);
-                System.out.println("");
-                System.out.println(bitBouwer);
             }
-            BoeBot.wait(10);
         }
     }
 }

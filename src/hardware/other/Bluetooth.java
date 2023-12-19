@@ -1,7 +1,7 @@
-package sensoren;
+package hardware.other;
 
 import TI.SerialConnection;
-import robot.Updatable;
+import applicatie.Updatable;
 
 public class Bluetooth implements Updatable {
 
@@ -18,7 +18,7 @@ public class Bluetooth implements Updatable {
 
     @Override
     public void update() {
-        if (this.serial.available() != 0) {
+        if (this.serial.available() > 0) {
             byte[] bytes = new byte[this.serial.available()];
             for (int i = 0; i < bytes.length; i++) {
                 if (this.serial.available() != 0)

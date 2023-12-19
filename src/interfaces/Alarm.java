@@ -1,8 +1,8 @@
-package robot;
+package interfaces;
 
-import TI.BoeBot;
-import TI.PinMode;
 import TI.Timer;
+import hardware.other.Buzzer;
+import applicatie.Updatable;
 
 public class Alarm implements Updatable {
     private Timer timer = new Timer(0);
@@ -11,17 +11,15 @@ public class Alarm implements Updatable {
     private int rood;
     private int groen;
     private int blauw;
-    private LED led;
-    private int buzzerPin;
+    private LedHandler ledHandler;
+    private Buzzer buzzer;
     private boolean ledState = true;
     private boolean kinpper = false;
     private boolean alarm = false;
-    private float frequency;
-    private int buzzerTijd;
     private boolean buzzerState = true;
 
-    public void setLed(LED led) {
-        this.led = led;
+    public void setLedHandler(LedHandler ledHandler) {
+        this.ledHandler = ledHandler;
     }
 
     public void setKnipper(int tijd, int r, int g, int b) {
@@ -30,19 +28,20 @@ public class Alarm implements Updatable {
         this.rood = r;
         this.groen = g;
         this.blauw = b;
-        this.led = led;
     }
 
     public void setKnipper(boolean knipper) {
         this.kinpper = knipper;
     }
 
-    public void setBuzzer(int buzzerPin, float frequency, int pauze, int tijd) {
-        this.buzzerPin = buzzerPin;
-        BoeBot.setMode(buzzerPin, PinMode.Output);
-        this.frequency = frequency;
+    public void setBuzzer(Buzzer buzzer, int pauze) {
         this.buzzerTimer.setInterval(pauze);
-        this.buzzerTijd = tijd;
+        this.buzzer = buzzer;
+    }
+
+    public void setBuzzer(Buzzer buzzer) {
+        this.buzzerTimer.setInterval(0);
+        this.buzzer = buzzer;
     }
 
 
@@ -51,7 +50,7 @@ public class Alarm implements Updatable {
     }
 
     public void stop() {
-        BoeBot.digitalWrite(this.buzzerPin, false);
+        buzzer.state(false);
         this.alarm = false;
     }
 
@@ -59,24 +58,12 @@ public class Alarm implements Updatable {
     public void update() {
         if (this.alarm) {
             if (buzzerTimer.timeout()) {
-                if (this.frequency == 0) {
-                    BoeBot.digitalWrite(this.buzzerPin, this.buzzerState);
-                } else {
-                    if (buzzerState) {
-                        BoeBot.freqOut(this.buzzerPin, this.frequency, this.buzzerTijd);
-                    } else {
-                        BoeBot.digitalWrite(this.buzzerPin, false);
-                    }
-                }
+                buzzer.state(this.buzzerState);
                 this.buzzerState = !this.buzzerState;
                 buzzerTimer.mark();
             }
             if (this.timer.timeout() && this.kinpper) {
-                if (this.ledState) {
-                    this.led.alles(this.rood, this.groen, this.blauw);
-                } else {
-                    this.led.uit();
-                }
+                this.ledHandler.alarm(this.ledState, this.rood, this.groen, this.blauw);
                 this.ledState = !this.ledState;
                 this.timer.mark();
             }

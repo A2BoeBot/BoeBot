@@ -1,19 +1,28 @@
-package motor;
+package hardware.motor;
 
-import robot.LED;
-import robot.Updatable;
+import interfaces.LedHandler;
+import applicatie.Updatable;
 
 public class Motors implements Updatable {
     private Motor linksMotor, rechtsMotor;
     private int snelheidLinks, snelheidRechts;
+
+    public int getSnelheidLinks() {
+        return linksMotor.getSnelheid();
+    }
+
+    public int getSnelheidRechts() {
+        return rechtsMotor.getSnelheid();
+    }
+
     private boolean stop = false;
 
-    private LED led;
+    private LedHandler ledHandler;
 
-    public Motors(int pinLinksMotor, int pinRechtsMotor, LED led) {
+    public Motors(int pinLinksMotor, int pinRechtsMotor, LedHandler ledHandler) {
         this.linksMotor = new Motor(pinLinksMotor, true);
         this.rechtsMotor = new Motor(pinRechtsMotor, false);
-        this.led = led;
+        this.ledHandler = ledHandler;
     }
 
     public void stop() {
@@ -23,6 +32,7 @@ public class Motors implements Updatable {
     }
 
     public void zetSnelheden(int snelheid) {
+        this.stop = false;
         this.linksMotor.zetSnelheid(snelheid);
         this.rechtsMotor.zetSnelheid(snelheid);
         this.snelheidLinks = snelheid;
@@ -30,6 +40,7 @@ public class Motors implements Updatable {
     }
 
     public void zetSnelheden(int snelheid, int tijd) {
+        this.stop = false;
         this.linksMotor.zetSnelheid(snelheid, tijd);
         this.rechtsMotor.zetSnelheid(snelheid, tijd);
         this.snelheidLinks = snelheid;
@@ -54,33 +65,33 @@ public class Motors implements Updatable {
         this.snelheidRechts = snelheid;
     }
 
-    public void draaiRelatief(int snelheid) {
-        this.linksMotor.zetSnelheid(this.snelheidLinks - snelheid);
-        this.rechtsMotor.zetSnelheid(this.snelheidRechts + snelheid);
+    public void draaiRelatief(int snelheid, boolean stuurInverse) {
+        if (stuurInverse) {
+            this.linksMotor.zetSnelheid(this.snelheidLinks + snelheid);
+            this.rechtsMotor.zetSnelheid(this.snelheidRechts - snelheid);
+        } else {
+            this.linksMotor.zetSnelheid(this.snelheidLinks - snelheid);
+            this.rechtsMotor.zetSnelheid(this.snelheidRechts + snelheid);
+        }
     }
 
-    public void herstart() {
-        this.linksMotor.herstart();
-        this.rechtsMotor.herstart();
-        this.stop = false;
-    }
 
     @Override
     public void update() {
         this.linksMotor.update();
         this.rechtsMotor.update();
-        if (led != null && !this.stop) {
+        if (ledHandler != null && !this.stop) {
             if (this.linksMotor.getSnelheid() > this.rechtsMotor.getSnelheid()) {
-                led.links();
+                ledHandler.links();
             } else if (this.linksMotor.getSnelheid() < this.rechtsMotor.getSnelheid()) {
-                led.rechts();
+                ledHandler.rechts();
             } else {
                 if (this.linksMotor.getSnelheid() > 0) {
-                    led.vooruit();
+                    ledHandler.vooruit();
                 } else if (this.linksMotor.getSnelheid() < 0) {
-                    led.achteruit();
+                    ledHandler.achteruit();
                 } else {
-                    led.uit();
+                    ledHandler.uit();
                 }
             }
         }
