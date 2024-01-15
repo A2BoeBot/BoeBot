@@ -1,4 +1,4 @@
-package robot;
+package hardware.other;
 
 public interface AfstandsbedieningCallback {
     void knop_1_Ingedrukt();

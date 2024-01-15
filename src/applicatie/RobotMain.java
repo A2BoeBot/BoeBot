@@ -8,12 +8,14 @@ import hardware.other.*;
 import hardware.sensoren.*;
 import interfaces.Alarm;
 import interfaces.LedHandler;
+import interfaces.Lijnvolgers;
 import interfaces.UltrasoonHandler;
+import hardware.other.AfstandsbedieningCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RobotMain implements UltrasoonCallback, BluetoothCallback, LijnvolgersCallback {
+public class RobotMain implements UltrasoonCallback, BluetoothCallback, LijnvolgersCallback, AfstandsbedieningCallback {
 
     private Grijper grijper;
     private Motors motors;
@@ -64,9 +66,10 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 this.grijper = new Grijper(7, 750, 1200),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm(),
-                this.afstandsbediening = new Afstandsbediening(6),
+                this.afstandsbediening = new Afstandsbediening(6,this),
                 this.buzzer = new Buzzer(0, 20, 1000)
         };
+        this.updatables.addAll(Arrays.asList(updatablesToAdd));
         this.lijvolgers.voegLijnvolgerToe(lijnvolgerRechts);
         this.lijvolgers.voegLijnvolgerToe(lijnvolgerMidden);
         this.lijvolgers.voegLijnvolgerToe(lijnvolgerLinks);
@@ -77,7 +80,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
         this.ultrasoonHandler.setStopAfstand(0.25);
         this.ultrasoonHandler.setMotors(motors);
         this.ultrasoonHandler.setGrijper(grijper);
-        this.updatables.addAll(Arrays.asList(updatablesToAdd));
         this.motors.zetSnelheden(this.basisSnelheid);
         this.alarm.setLedHandler(this.ledHandler);
         this.alarm.setBuzzer(this.buzzer, 1000);
@@ -122,9 +124,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void lijnVolgers(boolean[] states) {
-//        System.out.println(minStuur + "min");
-//        System.out.println(maxStuur + "max");
-//        System.out.println(Arrays.toString(states));
         if (driveModus == -1 || timer.timeout()) {
             timer.mark();
             return;
@@ -150,56 +149,97 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 kruispunt++;
             }
         }
-//        System.out.println(kruispunt);
-//        System.out.println(tijd);
         if (tijd > 0)
             stuur = (int) Math.round(begingetal * Math.pow(gevoeligheid, tijd));
         else
             stuur = 0;
-//        System.out.println(stuur);
         if (stuur >= maxStuur) {
             stuur = maxStuur;
         }
         if (stuur <= minStuur) {
             stuur = minStuur;
         }
-//        System.out.println(stuur);
         motors.draaiRelatief(stuur, stuurInverse);
     }
 
     @Override
     public void tekstOntvangen(String tekst) {
-        if (this.driveModus == -1) {
-            if (tekst.matches("-?[0-9]+,-?[0-9]+")) {
-                System.out.println(tekst);
-                int x = Integer.parseInt(tekst.split(",")[0]);
-                int y = Integer.parseInt(tekst.split(",")[1]);
-                motors.zetSnelheden(y);
-                motors.draaiRelatief(x, stuurInverse);
-            }
-//            if (tekst.equals("1")) {
-//                this.motors.zetSnelheden(basisSnelheid);
-//            } else if (tekst.equals("2")) {
-//                this.motors.zetSnelheden(-basisSnelheid);
-//            } else if (tekst.equals("3")) {
-//                this.motors.draaiLinks(basisSnelheid);
-//            } else if (tekst.equals("4")) {
-//                this.motors.draaiRechts(basisSnelheid);
-//            } else if (tekst.equals("5")) {
-//                this.alarm.stop();
-//                this.motors.stop();
-//            } else if (tekst.equals("6")) {
-//                System.out.println(this.grijper.getDutyCycle());
-//                if (this.grijper.getDutyCycle() == this.grijper.getOpenDuty()) {
-//                    this.grijper.dicht();
-//                } else if (this.grijper.getDutyCycle() == this.grijper.getDichtDuty()) {
-//                    this.grijper.open();
-//                }
-//            } else if (tekst.equals("7")) {
-//                this.alarm.start();
-//            }
-        }
+
     }
 
 
+    @Override
+    public void knop_1_Ingedrukt() {
+        this.grijper.open();
+    }
+
+    @Override
+    public void knop_2_Ingedrukt() {
+        this.grijper.dicht();
+    }
+
+    @Override
+    public void knop_3_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_4_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_5_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_6_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_7_Ingedrukt() {
+        driveModus = 0;
+    }
+
+    @Override
+    public void knop_8_Ingedrukt() {
+        driveModus = -1;
+    }
+
+    @Override
+    public void knop_9_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_0_Ingedrukt() {
+    }
+
+    @Override
+    public void knop_Uit_Ingedrukt() {
+        this.alarm.start();
+        this.motors.stop();
+    }
+
+    @Override
+    public void knop_Ch_BovenIngedrukt() {
+        this.motors.zetSnelheden(basisSnelheid);
+    }
+
+    @Override
+    public void knop_Ch_OnderIngedrukt() {
+        this.motors.zetSnelheden(-basisSnelheid );
+    }
+
+    @Override
+    public void knop_Vol_Links_Ingedrukt() {
+        this.motors.draaiLinks(basisSnelheid);
+    }
+
+    @Override
+    public void knop_Vol_Rechts_Ingedrukt() {
+        this.motors.draaiRechts(basisSnelheid);
+    }
 }

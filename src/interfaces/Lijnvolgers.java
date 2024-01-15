@@ -1,7 +1,9 @@
-package hardware.sensoren;
+package interfaces;
 
 import TI.BoeBot;
 import applicatie.Updatable;
+import hardware.sensoren.Lijnvolger;
+import hardware.sensoren.LijnvolgersCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
