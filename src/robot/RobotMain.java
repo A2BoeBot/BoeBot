@@ -9,7 +9,7 @@ import sensoren.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RobotMain implements UltrasoonCallback, BluetoothCallback, LijnvolgerCallback {
+public class RobotMain implements UltrasoonCallback, BluetoothCallback, LijnvolgerCallback, AfstandsbedieningCallback {
 
     private Grijper grijper;
     private Motors motors;
@@ -49,7 +49,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 this.grijper = new Grijper(7, 750, 1200),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm(),
-                this.afstandsbediening = new Afstandsbediening(6)
+                this.afstandsbediening = new Afstandsbediening(6, this)
         };
         this.updatables.addAll(Arrays.asList(updatablesToAdd));
         motors.zetSnelheden(basisSnelheid);
@@ -177,5 +177,81 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 //                this.alarm.start();
 //            }
         }
+    }
+
+
+    @Override
+    public void knop_1_Ingedrukt() {
+        this.grijper.open();
+    }
+
+    @Override
+    public void knop_2_Ingedrukt() {
+        this.grijper.dicht();
+    }
+
+    @Override
+    public void knop_3_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_4_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_5_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_6_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_7_Ingedrukt() {
+        driveModus = 0;
+    }
+
+    @Override
+    public void knop_8_Ingedrukt() {
+        driveModus = -1;
+    }
+
+    @Override
+    public void knop_9_Ingedrukt() {
+
+    }
+
+    @Override
+    public void knop_0_Ingedrukt() {
+    }
+
+    @Override
+    public void knop_Uit_Ingedrukt() {
+        this.alarm.start();
+        this.motors.stop();
+    }
+
+    @Override
+    public void knop_Ch_BovenIngedrukt() {
+        this.motors.zetSnelheden(basisSnelheid);
+    }
+
+    @Override
+    public void knop_Ch_OnderIngedrukt() {
+        this.motors.zetSnelheden(-basisSnelheid );
+    }
+
+    @Override
+    public void knop_Vol_Links_Ingedrukt() {
+        this.motors.draaiLinks(basisSnelheid);
+    }
+
+    @Override
+    public void knop_Vol_Rechts_Ingedrukt() {
+        this.motors.draaiRechts(basisSnelheid);
     }
 }
