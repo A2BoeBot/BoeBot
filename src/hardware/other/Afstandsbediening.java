@@ -3,7 +3,6 @@ package hardware.other;
 import TI.BoeBot;
 import TI.PinMode;
 import applicatie.Updatable;
-import hardware.sensoren.AfstandsbedieningCallback;
 
 import java.util.Arrays;
 
