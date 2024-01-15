@@ -1,7 +1,8 @@
-package robot;
+package hardware.other;
 
 import TI.BoeBot;
 import TI.PinMode;
+import robot.AfstandsbedieningCallback;
 
 import java.util.Arrays;
 
