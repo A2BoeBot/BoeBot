@@ -58,7 +58,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 this.ultrasoonOnder = new Ultrasoon(6, 5),
                 this.ultrasoonAchter = new Ultrasoon(9, 10),
                 this.ledHandler = new LedHandler(6),
-                this.motors = new Motors(12, 13, this.ledHandler),
+                this.motors = new Motors(12, 13, this.ledHandler, new Timer(1550)),
                 this.lijnvolgerRechts = new Lijnvolger(1),
                 this.lijnvolgerMidden = new Lijnvolger(2),
                 this.lijnvolgerLinks = new Lijnvolger(3),

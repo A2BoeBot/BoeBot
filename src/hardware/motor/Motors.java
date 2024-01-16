@@ -1,11 +1,14 @@
 package hardware.motor;
 
+import TI.Timer;
 import interfaces.LedHandler;
 import applicatie.Updatable;
 
 public class Motors implements Updatable {
     private Motor linksMotor, rechtsMotor;
     private int snelheidLinks, snelheidRechts;
+    private Timer draaiTimer;
+    private boolean isAanHetDraaien;
 
     public int getSnelheidLinks() {
         return linksMotor.getSnelheid();
@@ -19,10 +22,12 @@ public class Motors implements Updatable {
 
     private LedHandler ledHandler;
 
-    public Motors(int pinLinksMotor, int pinRechtsMotor, LedHandler ledHandler) {
+    public Motors(int pinLinksMotor, int pinRechtsMotor, LedHandler ledHandler, Timer draaiTimer) {
         this.linksMotor = new Motor(pinLinksMotor, true);
         this.rechtsMotor = new Motor(pinRechtsMotor, false);
         this.ledHandler = ledHandler;
+        this.draaiTimer = draaiTimer;
+        this.isAanHetDraaien = false;
     }
 
     public void stop() {
@@ -47,8 +52,17 @@ public class Motors implements Updatable {
         this.snelheidRechts = snelheid;
     }
 
-    public void draai(int graden) {
-
+    public void draai(int graden, int basisSnelheid) {
+        if (graden > 0) {
+            this.draaiRechts(basisSnelheid);
+            this.draaiTimer.setInterval(1600*(graden/90));
+        }
+        else if (graden < 0) {
+            this.draaiLinks(basisSnelheid);
+            this.draaiTimer.setInterval(1600*(graden/90));
+        }
+        this.draaiTimer.mark();
+        this.isAanHetDraaien = true;
     }
 
     public void draaiLinks(int snelheid) {
@@ -94,6 +108,13 @@ public class Motors implements Updatable {
                     ledHandler.uit();
                 }
             }
+        }
+        if (!draaiTimer.timeout())
+            return;
+        draaiTimer.mark();
+        if (isAanHetDraaien) {
+            this.zetSnelheden(Math.abs(this.snelheidLinks));
+            this.isAanHetDraaien = false;
         }
     }
 }
