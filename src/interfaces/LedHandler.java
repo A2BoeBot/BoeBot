@@ -1,5 +1,7 @@
 package interfaces;
 
+import TI.BoeBot;
+import hardware.motor.Motors;
 import hardware.other.LED;
 import applicatie.Updatable;
 
@@ -55,13 +57,13 @@ public class LedHandler implements Updatable {
     }
 
     public void deur(boolean aanOfUit) {
-        if (!aanOfUit) {
+        for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 6; i++) {
-                this.led.set(i, i * 10, i, i + 10);
+                this.led.set(i * 10, i * 10, i, i * 10);
             }
-        } else {
-            this.led.uit();
+            BoeBot.rgbShow();
         }
+        uit();
     }
 
     public void alarm(boolean ledState, int rood, int groen, int blauw) {

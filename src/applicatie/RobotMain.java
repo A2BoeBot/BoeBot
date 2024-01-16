@@ -113,12 +113,12 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void stopAfstand(Ultrasoon ultrasoon) {
-        if (!driveModus.equals("idle")) {
-            this.alarm.start();
-            this.motors.stop();
-            this.minStuur = 0;
-            this.maxStuur = 0;
-        }
+//        if (!driveModus.equals("idle")) {
+//            this.alarm.start();
+//            this.motors.stop();
+//            this.minStuur = 0;
+//            this.maxStuur = 0;
+//        }
     }
 
 
@@ -163,11 +163,13 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void knop_1_Ingedrukt() {
+        driveModus = "afstandsbediening";
         this.grijper.open();
     }
 
     @Override
     public void knop_2_Ingedrukt() {
+        driveModus = "afstandsbediening";
         this.grijper.dicht();
     }
 
@@ -212,37 +214,32 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void knop_Uit_Ingedrukt() {
-        if (driveModus.equals("afstandsbediening")) {
+            driveModus = "afstandsbediening";
             this.alarm.start();
             this.motors.stop();
         }
-    }
 
     @Override
     public void knop_Ch_BovenIngedrukt() {
-        if (driveModus.equals("afstandsbediening")) {
+            driveModus = "afstandsbediening";
             this.motors.zetSnelheden(basisSnelheid);
         }
-    }
 
     @Override
     public void knop_Ch_OnderIngedrukt() {
-        if (driveModus.equals("afstandsbediening")) {
+            driveModus = "afstandsbediening";
             this.motors.zetSnelheden(-basisSnelheid);
         }
-    }
 
     @Override
     public void knop_Vol_Links_Ingedrukt() {
-        if (driveModus.equals("afstandsbediening")) {
+            driveModus = "afstandsbediening";
             this.motors.draaiLinks(basisSnelheid);
         }
-    }
 
     @Override
     public void knop_Vol_Rechts_Ingedrukt() {
-        if (driveModus.equals("afstandsbediening")) {
+            driveModus = "afstandsbediening";
             this.motors.draaiRechts(basisSnelheid);
-        }
     }
 }
