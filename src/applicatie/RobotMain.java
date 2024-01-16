@@ -36,13 +36,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private String driveModus = "idle";
     private double gevoeligheid = 2;
     private int minStuur, maxStuur;
-    private int kruispunt;
-    private int tijd;
-    private int stuur;
-    private int snelheid;
-    private boolean kruispuntGeteld;
+    private int tijd, stuur, snelheid;
     private double begingetal = 2;
-    private boolean stuurInverse;
     private Lijnvolger lijnvolgerRechts, lijnvolgerMidden, lijnvolgerLinks;
 
     public static void main(String[] args) {
@@ -63,11 +58,11 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 this.lijnvolgerMidden = new Lijnvolger(2),
                 this.lijnvolgerLinks = new Lijnvolger(3),
                 this.lijvolgers = new Lijnvolgers(this),
-                this.grijper = new Grijper(7, 750, 1200),
+                this.grijper = new Grijper(0, 750, 1200),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm(),
                 this.afstandsbediening = new Afstandsbediening(11, this),
-                this.buzzer = new Buzzer(0, 20, 1000)
+                this.buzzer = new Buzzer(2, 20, 1000)
         };
         this.updatables.addAll(Arrays.asList(updatablesToAdd));
         this.lijvolgers.voegLijnvolgerToe(lijnvolgerRechts);
@@ -80,7 +75,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
         this.ultrasoonHandler.setStopAfstand(0.25);
         this.ultrasoonHandler.setMotors(motors);
         this.ultrasoonHandler.setGrijper(grijper);
-        this.motors.zetSnelheden(this.basisSnelheid);
         this.alarm.setLedHandler(this.ledHandler);
         this.alarm.setBuzzer(this.buzzer, 1000);
         this.alarm.setKnipper(1000, 255, 0, 0);
@@ -98,68 +92,67 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void gevaarAfstand(Ultrasoon ultrasoon) {
-        this.alarm.stop();
-        double tempSnelheid = ((ultrasoon.getAfstand() - ultrasoonHandler.getStopAfstand()) / (ultrasoonHandler.getGevaarAfstand() - ultrasoonHandler.getStopAfstand()) * this.snelheid);
-        this.motors.zetSnelheden((int) tempSnelheid);
-        this.maxStuur = (int) (tempSnelheid / 1.5);
-        this.minStuur = (int) (tempSnelheid / 1.5 * -1);
+        if (!driveModus.equals("idle")) {
+            this.alarm.stop();
+            double tempSnelheid = ((ultrasoon.getAfstand() - ultrasoonHandler.getStopAfstand()) / (ultrasoonHandler.getGevaarAfstand() - ultrasoonHandler.getStopAfstand()) * this.snelheid);
+            this.motors.zetSnelheden((int) tempSnelheid);
+            this.maxStuur = (int) (tempSnelheid / 1.5);
+            this.minStuur = (int) (tempSnelheid / 1.5 * -1);
+        }
     }
 
     @Override
     public void clearAfstand(Ultrasoon ultrasoon) {
-        this.alarm.stop();
-        this.motors.zetSnelheden(snelheid, 10);
-        this.maxStuur = (int) (snelheid / 1.5);
-        this.minStuur = (int) (snelheid / 1.5 * -1);
+        if (!driveModus.equals("idle")) {
+            this.alarm.stop();
+            this.motors.zetSnelheden(snelheid, 10);
+            this.maxStuur = (int) (snelheid / 1.5);
+            this.minStuur = (int) (snelheid / 1.5 * -1);
+        }
     }
 
     @Override
     public void stopAfstand(Ultrasoon ultrasoon) {
-        this.alarm.start();
-        this.motors.stop();
-        this.minStuur = 0;
-        this.maxStuur = 0;
+        if (!driveModus.equals("idle")) {
+            this.alarm.start();
+            this.motors.stop();
+            this.minStuur = 0;
+            this.maxStuur = 0;
+        }
     }
 
 
     @Override
     public void lijnVolgers(boolean[] states) {
-        if (driveModus.equals("route") || timer.timeout()) {
-            timer.mark();
-            return;
-        } else if (states[2]) {
-            kruispuntGeteld = false;
-            if (tijd > minStuur) {
-                tijd += 1;
-                stuurInverse = true;
+        boolean stuurInverse = false;
+        if (driveModus.equals("route")) {
+            if (states[2]) {
+                if (tijd > minStuur) {
+                    tijd += 1;
+                    stuurInverse = true;
+                }
+            } else if (states[0]) {
+                if (tijd < maxStuur) {
+                    tijd += 1;
+                    stuurInverse = false;
+                }
+            } else if (states[1]) {
+                tijd = 0;
+            } else {
+                tijd = 0;
             }
-        } else if (states[0]) {
-            kruispuntGeteld = false;
-            if (tijd < maxStuur) {
-                tijd += 1;
-                stuurInverse = false;
+            if (tijd > 0)
+                stuur = (int) Math.round(begingetal * Math.pow(gevoeligheid, tijd));
+            else
+                stuur = 0;
+            if (stuur >= maxStuur) {
+                stuur = maxStuur;
             }
-        } else if (states[1]) {
-            kruispuntGeteld = false;
-            tijd = 0;
-        } else {
-            tijd = 0;
-            if (!kruispuntGeteld) {
-                kruispuntGeteld = true;
-                kruispunt++;
+            if (stuur <= minStuur) {
+                stuur = minStuur;
             }
+            motors.draaiRelatief(stuur, stuurInverse);
         }
-        if (tijd > 0)
-            stuur = (int) Math.round(begingetal * Math.pow(gevoeligheid, tijd));
-        else
-            stuur = 0;
-        if (stuur >= maxStuur) {
-            stuur = maxStuur;
-        }
-        if (stuur <= minStuur) {
-            stuur = minStuur;
-        }
-        motors.draaiRelatief(stuur, stuurInverse);
     }
 
     @Override
