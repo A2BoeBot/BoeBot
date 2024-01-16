@@ -56,7 +56,8 @@ public class LedHandler implements Updatable {
         }
     }
 
-    public void deur(boolean aanOfUit) {
+    public void deur(Motors motors) {
+        motors.stop();
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 6; i++) {
                 this.led.set(i * 10, i * 10, i, i * 10);

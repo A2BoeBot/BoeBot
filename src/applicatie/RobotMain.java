@@ -113,12 +113,12 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void stopAfstand(Ultrasoon ultrasoon) {
-//        if (!driveModus.equals("idle")) {
-//            this.alarm.start();
-//            this.motors.stop();
-//            this.minStuur = 0;
-//            this.maxStuur = 0;
-//        }
+        if (!driveModus.equals("idle")) {
+            this.alarm.start();
+            this.motors.stop();
+            this.minStuur = 0;
+            this.maxStuur = 0;
+        }
     }
 
 
@@ -160,7 +160,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     }
 
-
     @Override
     public void knop_1_Ingedrukt() {
         driveModus = "afstandsbediening";
@@ -175,22 +174,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void knop_3_Ingedrukt() {
-
-    }
-
-    @Override
-    public void knop_4_Ingedrukt() {
-
-    }
-
-    @Override
-    public void knop_5_Ingedrukt() {
-
-    }
-
-    @Override
-    public void knop_6_Ingedrukt() {
-
+        driveModus = "afstandsbediening";
+        ledHandler.deur(this.motors);
     }
 
     @Override
@@ -206,10 +191,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     @Override
     public void knop_9_Ingedrukt() {
         driveModus = "route";
-    }
-
-    @Override
-    public void knop_0_Ingedrukt() {
     }
 
     @Override
