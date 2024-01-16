@@ -54,19 +54,19 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     public void init() {
         Updatable[] updatablesToAdd = {
                 this.ultrasoonHandler = new UltrasoonHandler(this),
-                this.ultrasoonBoven = new Ultrasoon(10, 11),
-                this.ultrasoonOnder = new Ultrasoon(8, 9),
-                this.ultrasoonAchter = new Ultrasoon(4, 3),
+                this.ultrasoonBoven = new Ultrasoon(7, 8),
+                this.ultrasoonOnder = new Ultrasoon(6, 5),
+                this.ultrasoonAchter = new Ultrasoon(9, 10),
                 this.ledHandler = new LedHandler(6),
                 this.motors = new Motors(12, 13, this.ledHandler),
-                this.lijnvolgerRechts = new Lijnvolger(0),
-                this.lijnvolgerMidden = new Lijnvolger(1),
-                this.lijnvolgerLinks = new Lijnvolger(2),
+                this.lijnvolgerRechts = new Lijnvolger(1),
+                this.lijnvolgerMidden = new Lijnvolger(2),
+                this.lijnvolgerLinks = new Lijnvolger(3),
                 this.lijvolgers = new Lijnvolgers(this),
                 this.grijper = new Grijper(7, 750, 1200),
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm(),
-                this.afstandsbediening = new Afstandsbediening(6, this),
+                this.afstandsbediening = new Afstandsbediening(11, this),
                 this.buzzer = new Buzzer(0, 20, 1000)
         };
         this.updatables.addAll(Arrays.asList(updatablesToAdd));
