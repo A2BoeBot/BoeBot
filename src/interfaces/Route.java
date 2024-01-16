@@ -27,7 +27,7 @@ public class Route {
                 this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 's':
-                // TODO: 16/01/2024 draai om
+                motors.draai(180, basisSnelheid);
                 this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 'd':
@@ -43,7 +43,7 @@ public class Route {
                 this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 'o':
-                // TODO: 16/01/2024 deur functie
+                ledHandler.deur(motors);
                 this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
         }
