@@ -10,13 +10,9 @@ public class Afstandsbediening implements Updatable {
     public static final int KNOP_1 = 0;
     public static final int KNOP_2 = 0b1;
     public static final int KNOP_3 = 0b10;
-    public static final int KNOP_4 = 0b11;
-    public static final int KNOP_5 = 0b100;
-    public static final int KNOP_6 = 0b101;
     public static final int KNOP_7 = 0b110;
     public static final int KNOP_8 = 0b111;
     public static final int KNOP_9 = 0b1000;
-    public static final int KNOP_0 = 0b1001;
     public static final int KNOP_UIT = 0b10101;
     public static final int KNOP_CH_BOVEN = 0b10000;
     public static final int KNOP_CH_ONDER = 0b10001;
@@ -56,15 +52,6 @@ public class Afstandsbediening implements Updatable {
                 case KNOP_3:
                     this.callback.knop_3_Ingedrukt();
                     break;
-                case KNOP_4:
-                    this.callback.knop_4_Ingedrukt();
-                    break;
-                case KNOP_5:
-                    this.callback.knop_5_Ingedrukt();
-                    break;
-                case KNOP_6:
-                    this.callback.knop_6_Ingedrukt();
-                    break;
                 case KNOP_7:
                     this.callback.knop_7_Ingedrukt();
                     break;
@@ -73,9 +60,6 @@ public class Afstandsbediening implements Updatable {
                     break;
                 case KNOP_9:
                     this.callback.knop_9_Ingedrukt();
-                    break;
-                case KNOP_0:
-                    this.callback.knop_0_Ingedrukt();
                     break;
                 case KNOP_UIT:
                     this.callback.knop_Uit_Ingedrukt();
