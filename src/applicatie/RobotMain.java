@@ -6,10 +6,7 @@ import hardware.motor.Grijper;
 import hardware.motor.Motors;
 import hardware.other.*;
 import hardware.sensoren.*;
-import interfaces.Alarm;
-import interfaces.LedHandler;
-import interfaces.Lijnvolgers;
-import interfaces.UltrasoonHandler;
+import interfaces.*;
 import hardware.other.AfstandsbedieningCallback;
 
 import java.util.ArrayList;
@@ -29,7 +26,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private Alarm alarm;
     private Buzzer buzzer;
     private Bluetooth bluetooth;
-    private Timer timer = new Timer(100);
     private ArrayList<Updatable> updatables = new ArrayList<>();
     private int basisSnelheid = 30;
     private Afstandsbediening afstandsbediening;
@@ -39,6 +35,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private int tijd, stuur, snelheid;
     private double begingetal = 2;
     private Lijnvolger lijnvolgerRechts, lijnvolgerMidden, lijnvolgerLinks;
+    private Route route = new Route();
 
     public static void main(String[] args) {
         RobotMain robot = new RobotMain();
@@ -47,6 +44,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     }
 
     public void init() {
+        this.route.voegActiesToe("wwaw");
+
         Updatable[] updatablesToAdd = {
                 this.ultrasoonHandler = new UltrasoonHandler(this),
                 this.ultrasoonBoven = new Ultrasoon(7, 8),
@@ -86,6 +85,10 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
             for (Updatable updatable : this.updatables) {
                 updatable.update();
             }
+            if (driveModus.equals("idle")){
+                motors.stop();
+            }
+//            System.out.println(driveModus);
             BoeBot.wait(20);
         }
     }
@@ -113,12 +116,12 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void stopAfstand(Ultrasoon ultrasoon) {
-//        if (!driveModus.equals("idle")) {
-//            this.alarm.start();
-//            this.motors.stop();
-//            this.minStuur = 0;
-//            this.maxStuur = 0;
-//        }
+        if (!driveModus.equals("idle")) {
+            this.alarm.start();
+            this.motors.stop();
+            this.minStuur = 0;
+            this.maxStuur = 0;
+        }
     }
 
 
@@ -126,6 +129,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     public void lijnVolgers(boolean[] states) {
         boolean stuurInverse = false;
         if (driveModus.equals("route")) {
+            System.out.println(Arrays.toString(states));
             if (states[2]) {
                 if (tijd > minStuur) {
                     tijd += 1;
@@ -139,6 +143,9 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
             } else if (states[1]) {
                 tijd = 0;
             } else {
+                // route volgende actie
+                this.motors.stop();
+                this.route.actie(motors,grijper,ledHandler,basisSnelheid);
                 tijd = 0;
             }
             if (tijd > 0)
@@ -214,7 +221,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void knop_Uit_Ingedrukt() {
-            driveModus = "afstandsbediening";
+            driveModus = "idle";
             this.alarm.start();
             this.motors.stop();
         }

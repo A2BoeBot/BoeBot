@@ -66,7 +66,7 @@ public class LedHandler implements Updatable {
         uit();
     }
 
-    public void alarm(boolean ledState, int rood, int groen, int blauw) {
+    public void alles(boolean ledState, int rood, int groen, int blauw) {
         if (ledState) {
             this.led.alles(rood, groen, blauw);
         } else {
