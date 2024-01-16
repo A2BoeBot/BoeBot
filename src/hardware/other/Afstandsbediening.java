@@ -40,7 +40,6 @@ public class Afstandsbediening implements Updatable {
             for (int i = 0; i < 12; i++) {
                 lijstVanBitjes[i] = BoeBot.pulseIn(this.pin, false, 20000);
             }
-            System.out.println(Arrays.toString(lijstVanBitjes));
             int code = 0;
             for (int i = 0; i < 12; i++) {
                 if (lijstVanBitjes[i] > 1000) {

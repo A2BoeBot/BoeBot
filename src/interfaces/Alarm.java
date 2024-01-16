@@ -63,7 +63,7 @@ public class Alarm implements Updatable {
                 buzzerTimer.mark();
             }
             if (this.timer.timeout() && this.kinpper) {
-                this.ledHandler.alarm(this.ledState, this.rood, this.groen, this.blauw);
+                this.ledHandler.alles(this.ledState, this.rood, this.groen, this.blauw);
                 this.ledState = !this.ledState;
                 this.timer.mark();
             }

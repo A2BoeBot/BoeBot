@@ -16,25 +16,35 @@ public class Route {
     }
 
     public boolean actie(Motors motors, Grijper grijper, LedHandler ledHandler, int basisSnelheid) {
+        System.out.println(huidigeRoute);
         switch (this.huidigeRoute.charAt(0)) {
             case 'w':
                 motors.zetSnelheden(basisSnelheid);
+                this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 'a':
                 motors.draai(-90, basisSnelheid);
+                this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 's':
-                motors.draai(180, basisSnelheid);
-                motors.zetSnelheden(basisSnelheid);
+                // TODO: 16/01/2024 draai om
+                this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 'd':
                 motors.draai(90, basisSnelheid);
+                this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 'i':
-                ledHandler.deur(true);
+                grijper.dicht();
+                this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
             case 'e':
-
+                grijper.open();
+                this.huidigeRoute = this.huidigeRoute.substring(1);
+                return true;
+            case 'o':
+                // TODO: 16/01/2024 deur functie
+                this.huidigeRoute = this.huidigeRoute.substring(1);
                 return true;
         }
         return false;
