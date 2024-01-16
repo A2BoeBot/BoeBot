@@ -164,7 +164,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
 
     @Override
     public void tekstOntvangen(String tekst) {
-
+        this.route.voegActiesToe(tekst);
     }
 
     @Override
