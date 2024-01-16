@@ -44,8 +44,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     }
 
     public void init() {
-        this.route.voegActiesToe("wwaw");
-
         Updatable[] updatablesToAdd = {
                 this.ultrasoonHandler = new UltrasoonHandler(this),
                 this.ultrasoonBoven = new Ultrasoon(7, 8),
