@@ -36,6 +36,7 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     private double begingetal = 2;
     private Lijnvolger lijnvolgerRechts, lijnvolgerMidden, lijnvolgerLinks;
     private Route route = new Route();
+    private Knop knop;
 
     public static void main(String[] args) {
         RobotMain robot = new RobotMain();
@@ -61,7 +62,8 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 this.bluetooth = new Bluetooth(9600, this),
                 this.alarm = new Alarm(),
                 this.afstandsbediening = new Afstandsbediening(11, this),
-                this.buzzer = new Buzzer(2, 20, 1000)
+                this.buzzer = new Buzzer(2, 20, 1000),
+                this.knop = new Knop(1, motors, alarm)
         };
         this.updatables.addAll(Arrays.asList(updatablesToAdd));
         this.lijvolgers.voegLijnvolgerToe(lijnvolgerRechts);
