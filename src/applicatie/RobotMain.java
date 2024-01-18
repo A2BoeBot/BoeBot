@@ -129,7 +129,6 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
     public void lijnVolgers(boolean[] states) {
         boolean stuurInverse = false;
         if (driveModus.equals("route")) {
-            System.out.println(Arrays.toString(states));
             if (states[2]) {
                 if (tijd > minStuur) {
                     tijd += 1;
@@ -146,6 +145,12 @@ public class RobotMain implements UltrasoonCallback, BluetoothCallback, Lijnvolg
                 // route volgende actie
                 this.motors.stop();
                 this.route.actie(motors,grijper,ledHandler,basisSnelheid);
+                while (lijnvolgerLinks.getInput() < 1200||lijnvolgerMidden.getInput() > 1400 || lijnvolgerRechts.getInput() < 1200){
+                    lijnvolgerLinks.update();
+                    lijnvolgerMidden.update();
+                    lijnvolgerRechts.update();
+                    BoeBot.wait(10);
+                }
                 tijd = 0;
             }
             if (tijd > 0)
